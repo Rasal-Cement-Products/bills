@@ -1,0 +1,3536 @@
+<!DOCTYPE html>
+<html lang="mr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta id="viewport-meta" name="viewport" content="width=1020, user-scalable=yes">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@500;700;900&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 0;
+      color: #000;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* --- Toggle Styles --- */
+    .view-toggle-container {
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .view-toggle-container span.toggle-label {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: #28a745;
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(22px);
+    }
+
+    /* --- Card Layout Styles (Mobile Override) --- */
+    body.card-layout {
+      font-size: 16px;
+    }
+
+    body.card-layout #desktop-wrapper {
+      width: 100%;
+      padding: 10px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body.card-layout .invoice-box {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    body.card-layout .header h1 {
+      font-size: 28px;
+    }
+
+    body.card-layout .header p {
+      font-size: 15px;
+    }
+
+    body.card-layout .header-address {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    body.card-layout .header-phone-sep {
+      display: none;
+    }
+
+    body.card-layout .header-phones a.phone-link {
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    body.card-layout .doc-title {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    body.card-layout .details-container {
+      flex-direction: column;
+      padding: 15px;
+      gap: 15px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+    body.card-layout .details-right {
+      text-align: left;
+    }
+
+    body.card-layout .details-left h3 {
+      font-size: 20px;
+      margin: 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    body.card-layout .details-left p {
+      margin: 0;
+      padding: 12px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    body.card-layout .details-left p:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    body.card-layout .val-name {
+      display: block;
+      margin-top: 6px;
+      font-size: 24px;
+    }
+
+    body.card-layout .val-phone a {
+      display: block;
+      margin-top: 8px;
+      font-size: 22px;
+    }
+
+    body.card-layout .phone-sep {
+      display: none;
+    }
+
+    body.card-layout .val-name,
+    body.card-layout .val-address {
+      color: #000 !important;
+      font-weight: 900;
+    }
+
+    body.card-layout .val-phone a {
+      color: #0056b3 !important;
+      font-weight: 900;
+    }
+
+    body.card-layout table {
+      border: none;
+      margin-bottom: 20px;
+    }
+
+    body.card-layout thead {
+      display: none;
+    }
+
+    body.card-layout tr {
+      display: block;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      background: #fff;
+      position: relative;
+    }
+
+    body.card-layout td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: right;
+      padding: 8px 0;
+      border: none;
+      border-bottom: 1px dashed #eee;
+      font-size: 16px;
+      color: #000;
+      font-weight: 900;
+    }
+
+    body.card-layout td:last-child {
+      border-bottom: none;
+    }
+
+    body.card-layout td::before {
+      content: attr(data-label);
+      font-weight: 700;
+      color: #555;
+      text-align: left;
+      margin-right: 15px;
+    }
+
+    body.card-layout td[data-label="अ.क्र."] {
+      display: none;
+    }
+
+    body.card-layout td[data-label="तपशील"]::before {
+      display: none;
+    }
+
+    body.card-layout td[data-label="तपशील"] {
+      display: block;
+      text-align: left;
+      color: #0056b3;
+      font-size: 20px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 8px;
+      padding-right: 35px;
+    }
+
+    /* Enlarged font for additional charges in mobile view */
+    body.card-layout tr.charge-row {
+      display: flex;
+      justify-content: space-between;
+      border: none;
+      padding: 10px;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+      border-bottom: 1px solid #ddd;
+      background: transparent;
+    }
+
+    body.card-layout tr.charge-row td {
+      border: none;
+      padding: 0;
+      width: auto;
+      font-weight: 900;
+      color: #000;
+      font-size: 20px;
+    }
+
+    body.card-layout tr.charge-row td::before {
+      display: none;
+    }
+
+    body.card-layout td[colspan="5"] {
+      display: block;
+      text-align: center;
+    }
+
+    body.card-layout td[colspan="5"]::before {
+      display: none;
+    }
+
+    body.card-layout .summary-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    body.card-layout .totals-box {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #000;
+      order: 1;
+    }
+
+    body.card-layout .words-logistics {
+      width: 100%;
+      order: 2;
+    }
+
+    body.card-layout .totals-row {
+      font-size: 17px;
+    }
+
+    body.card-layout .btn-map {
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    /* Green, moderately sized total for mobile */
+    body.card-layout .grand-total {
+      padding: 15px 15px;
+      align-items: center;
+      background: #e9ecef;
+    }
+
+    body.card-layout .grand-total span:first-child {
+      font-size: 22px;
+      color: #333;
+    }
+
+    body.card-layout .grand-total span:last-child {
+      font-size: 32px;
+      color: #155724;
+      font-weight: 900;
+    }
+
+    /* BIG AMOUNTS in mobile view – all monetary rows */
+    body.card-layout .totals-row {
+      font-size: 20px;
+      padding: 14px 15px;
+    }
+
+    body.card-layout .totals-row span:last-child {
+      font-size: 26px;
+      font-weight: 900;
+      color: #000;
+    }
+
+    body.card-layout .balance-due {
+      font-size: 22px;
+    }
+
+    body.card-layout .balance-due span:last-child {
+      font-size: 30px;
+      color: #cc0000;
+    }
+
+    body.card-layout .balance-clear {
+      font-size: 20px;
+    }
+
+    body.card-layout .balance-clear span:last-child {
+      font-size: 26px;
+      color: #155724;
+    }
+
+    /* Big amount values in table rows */
+    body.card-layout td[data-label="दर (₹)"] {
+      font-size: 22px;
+      font-weight: 900;
+      color: #0056b3;
+    }
+
+    body.card-layout td[data-label="रक्कम (₹)"] {
+      font-size: 24px;
+      font-weight: 900;
+      color: #155724;
+    }
+
+    body.card-layout td[data-label="नग"] {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    /* Charge rows amounts */
+    body.card-layout tr.charge-row td {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    /* ===== MOBILE FORM IMPROVEMENTS ===== */
+    body.card-layout .customer-form-section {
+      margin-top: 20px;
+      padding: 20px 16px;
+      border-radius: 14px;
+    }
+
+    body.card-layout .customer-form-section h3 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    body.card-layout .form-group {
+      margin-bottom: 20px;
+    }
+
+    body.card-layout .form-group label {
+      font-size: 17px;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    body.card-layout .form-group input,
+    body.card-layout .form-group textarea {
+      font-size: 18px;
+      padding: 14px 12px;
+      border-radius: 10px;
+      line-height: 1.5;
+    }
+
+    body.card-layout .form-row {
+      flex-direction: column;
+      gap: 0px;
+    }
+
+    body.card-layout .form-row .form-group {
+      flex: unset;
+      width: 100%;
+    }
+
+    body.card-layout .btn-map-locate {
+      font-size: 17px;
+      padding: 13px 18px;
+      border-radius: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    body.card-layout #location-status {
+      display: block !important;
+      margin-left: 0;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    body.card-layout .btn-submit-order {
+      font-size: 20px;
+      padding: 18px;
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+
+    body.card-layout .order-success-msg {
+      font-size: 17px;
+    }
+
+    body.card-layout #cf-map-preview iframe {
+      height: 220px;
+      border-radius: 10px;
+    }
+
+    /* UPI Payment Section — Full Width in Mobile */
+    body.card-layout .upi-payment-section {
+      max-width: 100%;
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    /* Translation status indicator */
+    .translating-badge {
+      display: inline-block;
+      font-size: 13px;
+      color: #888;
+      font-weight: 700;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    body.card-layout .translating-badge {
+      font-size: 14px;
+    }
+
+    /* Clean "X" Button Styling */
+    .qty-input {
+      width: 60px;
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    .btn-remove-item {
+      background: #fff;
+      color: #dc3545;
+      border: 2px solid #dc3545;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: 0.2s;
+    }
+
+    .btn-remove-item:hover {
+      background: #ffe6e6;
+    }
+
+    body.card-layout .btn-remove-item {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 16px;
+      padding: 4px 8px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      color: #dc3545;
+      background: #fdfdfd;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* --- End of Card Layout Styles --- */
+
+    /* --- Customer Info Form Styles --- */
+    .customer-form-section {
+      margin-top: 30px;
+      padding: 25px;
+      border: 2px solid #0056b3;
+      border-radius: 12px;
+      background: #f0f6ff;
+    }
+
+    .customer-form-section h3 {
+      margin: 0 0 20px 0;
+      font-size: 22px;
+      color: #0056b3;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 16px;
+      font-weight: 700;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-family: 'Noto Sans Devanagari', sans-serif;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #0056b3;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+    }
+
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .btn-map-locate {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 8px;
+      text-decoration: none;
+    }
+
+    .btn-map-locate:hover {
+      background: #218838;
+    }
+
+    .btn-submit-order {
+      width: 100%;
+      background: #0056b3;
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 10px;
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      transition: 0.2s;
+    }
+
+    .btn-submit-order:hover {
+      background: #004494;
+    }
+
+    .order-success-msg {
+      display: none;
+      background: #d4edda;
+      border: 2px solid #28a745;
+      color: #155724;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+      margin-top: 15px;
+    }
+
+    /* --- Pole height selector --- */
+    .pole-height-selector {
+      margin-bottom: 14px;
+    }
+
+    .pole-height-selector label {
+      font-size: 16px;
+      color: #444;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .pole-height-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pole-height-btn {
+      padding: 7px 14px;
+      border: 2px solid #0056b3;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      background: #fff;
+      color: #0056b3;
+      transition: 0.2s;
+    }
+
+    .pole-height-btn:hover {
+      background: #e6f0ff;
+    }
+
+    .pole-height-btn.selected {
+      background: #0056b3;
+      color: #fff;
+    }
+
+    .pole-height-btn.on-order {
+      border-color: #e67e00;
+      color: #e67e00;
+    }
+
+    .pole-height-btn.on-order.selected {
+      background: #e67e00;
+      color: #fff;
+      border-color: #e67e00;
+    }
+
+    .pole-order-note {
+      font-size: 13px;
+      color: #e67e00;
+      font-weight: 700;
+      margin-top: 6px;
+      display: none;
+    }
+
+    #desktop-wrapper {
+      width: 1000px;
+      transform-origin: top left;
+      padding: 15px;
+      box-sizing: border-box;
+      margin: 0 auto;
+    }
+
+    .invoice-box {
+      width: 970px;
+      margin: 0;
+      padding: 40px;
+      border: 2px solid #000;
+      background: #fff;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+
+    a.phone-link {
+      color: #0056b3;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    a.phone-link:active,
+    a.phone-link:hover {
+      text-decoration: underline;
+    }
+
+    .header {
+      text-align: center;
+      border-bottom: 3px solid #000;
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: #000;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .header p {
+      margin: 8px 0 0 0;
+      font-size: 20px;
+      color: #333;
+      font-weight: 700;
+    }
+
+    .doc-title {
+      text-align: center;
+      margin-top: 0;
+      font-size: 30px;
+      font-weight: 900;
+      color: #000;
+      text-transform: uppercase;
+      text-decoration: underline;
+      margin-bottom: 30px;
+    }
+
+    .details-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      border: 2px solid #000;
+      padding: 15px;
+      background: #fff;
+    }
+
+    .details-left h3 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      font-weight: 900;
+      color: #000;
+    }
+
+    .details-left p,
+    .details-right p {
+      margin: 5px 0;
+      font-size: 20px;
+      color: #000;
+      font-weight: 700;
+    }
+
+    .details-right {
+      text-align: right;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      border: 2px solid #000;
+    }
+
+    th {
+      background-color: #e9ecef;
+      color: #000;
+      padding: 15px 10px;
+      text-align: left;
+      font-size: 22px;
+      font-weight: 900;
+      border: 2px solid #000;
+    }
+
+    td {
+      padding: 15px 10px;
+      border: 1px solid #000;
+      font-size: 22px;
+      font-weight: 700;
+      color: #000;
+      transition: background-color 0.3s;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fdfdfd;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .summary-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .words-logistics {
+      width: 55%;
+      font-size: 20px;
+    }
+
+    .words-box {
+      border: 2px solid #000;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #fff;
+    }
+
+    .note-box {
+      border: 2px solid #000;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #fff;
+    }
+
+    .note-box p {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .trips-section {
+      border: 2px solid #000;
+      margin-top: 20px;
+      display: none;
+      background: #fff;
+    }
+
+    .trips-section-title {
+      background: #e9ecef;
+      border-bottom: 2px solid #000;
+      padding: 10px 15px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .trip-acc-header {
+      background: #f8f9fa;
+      padding: 12px 15px;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ccc;
+      transition: background 0.3s;
+    }
+
+    .trip-acc-header:hover {
+      background: #e2e6ea;
+    }
+
+    .trip-icon {
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 1;
+      color: #0056b3;
+    }
+
+    .trip-detail-line {
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .trip-detail-line strong {
+      display: inline-block;
+      width: 140px;
+      color: #444;
+    }
+
+    .trip-detail-line span {
+      color: #000;
+      font-weight: 900;
+    }
+
+    .trip-products-box {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px dashed #ccc;
+    }
+
+    .trip-products-box strong {
+      color: #444;
+      font-size: 17px;
+    }
+
+    .trip-products-box ul {
+      margin: 8px 0 0 0;
+      padding-left: 20px;
+    }
+
+    .trip-products-box li {
+      margin-bottom: 5px;
+      font-weight: 900;
+      color: #0056b3;
+      font-size: 17px;
+    }
+
+    .totals-box {
+      width: 40%;
+      border: 3px solid #000;
+      padding: 0;
+      background: #fff;
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 15px;
+      border-bottom: 1px solid #000;
+      font-size: 20px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .totals-row:last-child {
+      border-bottom: none;
+    }
+
+    .grand-total {
+      font-weight: 900;
+      font-size: 26px;
+      background: #e9ecef;
+      color: #000;
+      border-top: 3px solid #000;
+      border-bottom: 3px solid #000;
+      transition: background-color 0.3s;
+    }
+
+    .highlight-update {
+      background-color: #d4edda !important;
+      transition: background-color 0.5s ease-out;
+    }
+
+    .balance-due {
+      font-weight: 900;
+      font-size: 28px;
+      color: #cc0000;
+      background: #fff5f5;
+      border-top: 3px solid #000;
+    }
+
+    .balance-clear {
+      font-weight: 900;
+      font-size: 24px;
+      color: #155724;
+      background: #d4edda;
+      border-top: 3px solid #000;
+    }
+
+    /* --- PRODUCT CATALOGUE STYLES (ENLARGED FONTS) --- */
+    .catalogue-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 3px dashed #0056b3;
+      display: none;
+    }
+
+    .catalogue-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .catalogue-header h2 {
+      font-size: 28px;
+      color: #0056b3;
+      margin: 0 0 10px 0;
+      font-weight: 900;
+    }
+
+    .catalogue-header p {
+      margin: 0;
+      color: #555;
+      font-size: 18px;
+    }
+
+    .cat-acc-container {
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .cat-acc-header {
+      background: #0056b3;
+      color: white;
+      padding: 15px 20px;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.3s;
+      scroll-margin-top: 70px;
+    }
+
+    .cat-acc-header:hover {
+      background: #004494;
+    }
+
+    .cat-icon {
+      font-size: 28px;
+      font-weight: bold;
+      line-height: 1;
+      color: #fff;
+    }
+
+    .cat-acc-body {
+      padding: 20px;
+      background: #fdfdfd;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .product-card {
+      border: 2px solid #eee;
+      border-radius: 12px;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Enlarged Product Card Text */
+    .product-name {
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: #222;
+    }
+
+    .product-desc {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 15px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .product-price {
+      font-size: 26px;
+      color: #28a745;
+      font-weight: 900;
+      margin-bottom: 20px;
+      border-bottom: 1px dashed #ccc;
+      padding-bottom: 12px;
+    }
+
+    /* Highlight class for feet/inches */
+    .hl-measure {
+      background: #e6f2ff;
+      color: #0056b3;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin: 2px 0;
+    }
+
+    /* Enlarged Inputs */
+    .cat-input-group {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cat-input-group label {
+      font-size: 18px;
+      color: #444;
+      font-weight: 700;
+    }
+
+    .cat-input-group input {
+      width: 80px;
+      padding: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .cat-add-group {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .cat-qty-input {
+      width: 70px;
+      font-size: 20px;
+      font-weight: 900;
+      text-align: center;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .add-cart-btn {
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      flex-grow: 1;
+      transition: 0.3s;
+    }
+
+    .add-cart-btn:hover {
+      background: #218838;
+    }
+
+    /* ACTIONS BUTTONS */
+    .action-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .btn-call-shop {
+      display: none;
+      width: 100%;
+      max-width: 400px;
+      background: #28a745;
+      color: #fff;
+      padding: 18px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      border: 2px solid #218838;
+      text-decoration: none;
+      box-sizing: border-box;
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-call-shop:hover {
+      background: #218838;
+    }
+
+    /* Call Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #555;
+      font-weight: bold;
+    }
+
+    .call-note {
+      font-size: 16px;
+      color: #d9534f;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: #fdf3f2;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #f5c6cb;
+    }
+
+    .call-note small {
+      font-weight: 700;
+      color: #555;
+    }
+
+    .call-option-btn {
+      display: block;
+      width: 100%;
+      background: #0056b3;
+      color: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: 900;
+      box-sizing: border-box;
+    }
+
+    .call-option-btn:hover {
+      background: #004494;
+    }
+
+    .map-box {
+      text-align: center;
+      margin-top: 35px;
+      border-top: 2px dashed #000;
+      padding-top: 25px;
+    }
+
+    .btn-map {
+      display: inline-block;
+      background: #28a745;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .footer {
+      text-align: center;
+      padding-top: 25px;
+      margin-top: 30px;
+      border-top: 2px solid #000;
+    }
+
+    .footer p.marathi-note {
+      font-size: 20px;
+      font-weight: 900;
+      color: #222;
+      margin: 0;
+    }
+
+    .footer p.english-note {
+      font-size: 16px;
+      font-weight: 700;
+      color: #555;
+      margin: 5px 0 0 0;
+    }
+
+    .btn-print {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 20px auto 20px;
+      background: #0056b3;
+      color: white;
+      padding: 18px;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Save All Button */
+    .btn-save-all {
+      display: none;
+      width: 100%;
+      max-width: 400px;
+      margin: 10px auto;
+      background: #28a745;
+      color: #fff;
+      padding: 18px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      border: 2px solid #218838;
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+      transition: 0.2s;
+      font-family: 'Noto Sans Devanagari', sans-serif;
+    }
+
+    .btn-save-all:hover {
+      background: #218838;
+    }
+
+    .btn-save-all:disabled {
+      background: #6c757d;
+      border-color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .save-status-msg {
+      display: none;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px auto;
+      max-width: 400px;
+    }
+
+    .save-status-msg.success {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid #28a745;
+    }
+
+    .save-status-msg.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid #dc3545;
+    }
+
+    body.card-layout .btn-save-all {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      font-size: 20px;
+      padding: 16px;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+
+      .view-toggle-container,
+      .map-box,
+      .btn-print,
+      .btn-save-all,
+      .save-status-msg,
+      .action-btn-group,
+      .catalogue-section,
+      #loading-screen,
+      #customer-form-wrapper {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      #desktop-wrapper {
+        transform: none !important;
+        padding: 0;
+        width: 100%;
+      }
+
+      .invoice-box {
+        box-shadow: none;
+        border: 1.5px solid #000;
+        padding: 16px 20px;
+        width: 100%;
+      }
+
+      .trip-acc-body {
+        display: block !important;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .trip-icon {
+        display: none !important;
+      }
+
+      input.qty-input {
+        border: none !important;
+        appearance: none;
+        -moz-appearance: textfield;
+        font-size: inherit;
+        background: transparent;
+        padding: 0;
+        width: auto;
+        font-weight: inherit;
+      }
+
+      .btn-remove-item {
+        display: none !important;
+      }
+
+      .header h1 {
+        font-size: 26px;
+      }
+
+      .header p,
+      .doc-title,
+      .details-left p,
+      .details-right p,
+      th,
+      td,
+      .words-logistics,
+      .note-box p,
+      .trips-section-title,
+      .totals-row {
+        font-size: 13px;
+      }
+
+      .details-left h3 {
+        font-size: 15px;
+      }
+
+      .grand-total {
+        font-size: 16px;
+        padding: 7px 12px;
+        background: #e9ecef !important;
+      }
+
+      .balance-due {
+        font-size: 17px;
+      }
+
+      .balance-clear {
+        font-size: 15px;
+      }
+
+      a.phone-link {
+        color: #000;
+        text-decoration: none;
+        font-size: inherit;
+      }
+    }
+
+
+    /* ===== UPI PAYMENT SECTION ===== */
+    /* ===== UPI PAYMENT SECTION — always mobile-friendly ===== */
+
+    /* Wrapper — always mobile-friendly and full width inside its container */
+    .upi-payment-section {
+      display: none;
+      margin: 28px 0 0 0;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      font-family: inherit;
+    }
+
+    /* Green header banner */
+    .upi-payment-header {
+      background: #1a7a3a;
+      color: #fff;
+      padding: 18px 20px 14px 20px;
+      text-align: center;
+    }
+
+    .upi-header-icon {
+      font-size: 36px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .upi-header-title {
+      font-size: 22px;
+      font-weight: 900;
+      display: block;
+    }
+
+    .upi-header-sub {
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 0.85;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Body padding */
+    .upi-payment-body {
+      padding: 20px 18px 24px 18px;
+    }
+
+    /* ── Amount box ── */
+    .upi-amount-box {
+      background: #f0fff4;
+      border: 2.5px solid #1a7a3a;
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .upi-amount-label {
+      font-size: 15px;
+      color: #444;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .upi-amount-value {
+      font-size: 40px;
+      font-weight: 900;
+      color: #1a7a3a;
+      display: block;
+      line-height: 1.1;
+    }
+
+    .upi-amount-note {
+      font-size: 13px;
+      color: #777;
+      font-weight: 700;
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* ── Step blocks ── */
+    .upi-step {
+      margin-bottom: 20px;
+    }
+
+    .upi-step-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .upi-step-num {
+      background: #1a7a3a;
+      color: #fff;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .upi-step-title {
+      font-size: 17px;
+      font-weight: 900;
+      color: #222;
+      line-height: 1.3;
+    }
+
+    .upi-step-hint {
+      font-size: 13px;
+      color: #666;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* ── QR Code ── */
+    .upi-qr-frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #fff;
+      border: 3px solid #1a7a3a;
+      border-radius: 16px;
+      padding: 16px 16px 12px 16px;
+    }
+
+    #upi-qr-canvas {
+      background: #fff;
+      padding: 4px;
+    }
+
+    #upi-qr-canvas img,
+    #upi-qr-canvas canvas {
+      display: block;
+    }
+
+    .upi-qr-apps-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .upi-qr-app-tag {
+      background: #f1f3f4;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    /* ── OR divider ── */
+    .upi-or {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0;
+      color: #aaa;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .upi-or::before,
+    .upi-or::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ddd;
+    }
+
+    /* ── App buttons ── */
+    .upi-app-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .upi-app-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 18px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 900;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.18s, transform 0.1s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .upi-app-btn:active { opacity: 0.8; transform: scale(0.98); }
+
+    .upi-btn-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.2);
+      font-size: 22px;
+    }
+
+    .upi-btn-gpay    { background: #fff; color: #1a1a1a; border: 2px solid #e0e0e0; }
+    .upi-btn-gpay .upi-btn-icon { background: #f1f3f4; }
+    .upi-btn-phonepe { background: #5f259f; color: #fff; }
+    .upi-btn-paytm   { background: #00baf2; color: #fff; }
+    .upi-btn-generic { background: #1a7a3a; color: #fff; }
+
+    .upi-btn-text-wrap { display: flex; flex-direction: column; }
+    .upi-btn-main { font-size: 17px; font-weight: 900; line-height: 1.2; }
+    .upi-btn-sub  { font-size: 12px; font-weight: 700; opacity: 0.8; margin-top: 1px; }
+
+    .upi-btn-arrow {
+      margin-left: auto;
+      font-size: 20px;
+      opacity: 0.6;
+    }
+
+    /* ── Manual UPI ID box ── */
+    .upi-id-card {
+      background: #f8f9fa;
+      border: 2px solid #dee2e6;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 4px;
+    }
+
+    .upi-id-card-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #666;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .upi-id-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .upi-id-value {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a7a3a;
+      word-break: break-all;
+    }
+
+    .upi-copy-btn {
+      background: #1a7a3a;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .upi-copy-btn:active { background: #145e2c; }
+
+    /* ── After payment note ── */
+    .upi-after-pay {
+      background: #fff8e1;
+      border: 2px solid #f0c040;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .upi-after-pay-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+
+    .upi-after-pay-text {
+      font-size: 15px;
+      font-weight: 900;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .upi-after-pay-sub {
+      font-size: 13px;
+      font-weight: 700;
+      color: #666;
+      margin-top: 4px;
+      display: block;
+    }
+
+    @media print {
+      .upi-payment-section { display: none !important; }
+    }
+
+    /* ===== STEP LABEL STYLES ===== */
+    .step-label {
+      background: #e8f4fd;
+      border-left: 4px solid #0056b3;
+      color: #0056b3;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 10px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 12px;
+    }
+
+    /* ===== HELP GUIDE STYLES ===== */
+    .help-banner {
+      background: linear-gradient(135deg, #e8f4fd, #d0eaff);
+      border: 2px solid #0056b3;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin: 0 0 20px 0;
+      position: relative;
+    }
+    .help-banner-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0056b3;
+      margin: 0 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .help-steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .help-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #222;
+      line-height: 1.5;
+    }
+    .help-step-num {
+      background: #0056b3;
+      color: #fff;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+    }
+    .help-dismiss {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #555;
+      font-weight: bold;
+      line-height: 1;
+    }
+    .help-dismiss:hover { color: #000; }
+    .help-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      width: auto;
+      height: auto;
+      padding: 12px 20px;
+      border-radius: 50px;
+      background: #0056b3;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,86,179,0.45);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .help-fab:hover { background: #004494; transform: scale(1.1); }
+    .help-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .help-modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 460px;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    }
+    .help-modal h2 {
+      margin: 0 0 6px 0;
+      font-size: 22px;
+      color: #0056b3;
+      font-weight: 900;
+    }
+    .help-modal .help-subtitle {
+      font-size: 15px;
+      color: #666;
+      margin: 0 0 20px 0;
+      font-weight: 700;
+    }
+    .help-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #555;
+      font-weight: bold;
+    }
+    .help-modal-close:hover { color: #000; }
+    .help-modal .help-steps li {
+      font-size: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ddd;
+    }
+    .help-modal .help-steps li:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .help-tip-box {
+      background: #fff8e1;
+      border: 1px solid #f0c040;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-top: 18px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #555;
+    }
+    body.card-layout .help-banner { margin: 0 0 16px 0; padding: 14px 16px; }
+    body.card-layout .help-banner-title { font-size: 18px; }
+    body.card-layout .help-steps li { font-size: 15px; }
+    body.card-layout .help-fab { bottom: 18px; right: 14px; font-size: 16px; padding: 10px 16px; }
+
+  </style>
+</head>
+
+<body>
+  <div id="loading-screen">⏳ माहिती लोड होत आहे, कृपया थांबा...</div>
+
+  <div class="view-toggle-container">
+    <span class="toggle-label">📱 मोबाईल व्यू चालू / बंद करा</span>
+    <label class="switch">
+      <input type="checkbox" id="layoutToggle" onchange="toggleLayout()">
+      <span class="slider round"></span>
+    </label>
+  </div>
+
+  <div id="desktop-wrapper" style="visibility:hidden;">
+    <div class="invoice-box">
+      <!-- ===== HELP GUIDE BANNER (shown by JS after data loads) ===== -->
+      <div id="help-banner" class="help-banner" style="display:none;">
+        <button class="help-dismiss" onclick="dismissHelp()" title="बंद करा">✖</button>
+        <div class="help-banner-title" id="help-banner-title">ℹ️ हे पान कसे वापरावे?</div>
+        <ol class="help-steps" id="help-banner-steps"></ol>
+      </div>
+
+            <div class="header">
+        <h1>रसाळ सिमेंट प्रॉडक्ट्स</h1>
+        <p><span class="header-address">लोणी रोड, कोल्हार-भगवतीपूर, ता. राहाता</span>
+          <span class="header-phones">
+            <a href="tel:+918805579296" class="phone-link">+91 8805579296</a>
+            <span class="header-phone-sep"> | </span>
+            <a href="tel:+919623266922" class="phone-link">+91 9623266922</a>
+          </span>
+        </p>
+      </div>
+
+      <div id="step1-label" class="step-label" style="display:none;">📄 Step 1: तुमचे कोटेशन तपासा</div>
+      <h2 class="doc-title" id="doc-title">पक्के बिल</h2>
+
+      <div class="details-container">
+        <div class="details-left">
+          <h3 id="customer-name">ग्राहकाचे नाव: </h3>
+          <p id="customer-address" style="display: none;">पत्ता: </p>
+          <p id="customer-phone">मोबाईल: </p>
+        </div>
+        <div class="details-right">
+          <p><strong>बिल क्र:</strong> <span id="bill-id"></span></p>
+          <p><strong>दिनांक:</strong> <span id="bill-date"></span></p>
+          <p><strong>वेळ:</strong> <span id="bill-time"></span></p>
+        </div>
+      </div>
+
+      <table id="main-cart-table">
+        <thead>
+          <tr>
+            <th class="center" style="width:8%;">अ.क्र.</th>
+            <th>तपशील</th>
+            <th class="center" style="width:12%;">नग</th>
+            <th class="right" style="width:23%;">दर (₹)</th>
+            <th class="right" style="width:25%;">रक्कम (₹)</th>
+          </tr>
+        </thead>
+        <tbody id="cart-table-body">
+        </tbody>
+      </table>
+
+      <div class="note-box" id="bill-note-box" style="display:none;">
+        <p><strong>नोंद:</strong> <span id="bill-note"></span></p>
+      </div>
+
+      <div class="summary-section">
+        <div class="words-logistics">
+          <div class="words-box" style="display:none;">
+          </div>
+
+          <div class="trips-section" id="trips-section">
+            <div class="trips-section-title">वाहतूक / ट्रिप तपशील</div>
+            <div id="trips-container"></div>
+          </div>
+        </div>
+
+        <div class="totals-box" id="totals-box">
+        </div>
+      </div>
+
+      <!-- Action Buttons Group (Call Shop) -->
+      <div class="action-btn-group">
+        <button id="call-shop-btn" class="btn-call-shop" onclick="openCallModal()">📞 दुकानाशी संपर्क करा</button>
+      </div>
+
+      <!-- Call Options Modal -->
+      <div id="call-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+          <button class="close-modal" onclick="closeCallModal()">✖</button>
+          <h3 style="margin-top:5px;">📞 कोणाला कॉल करावे?</h3>
+          <p class="call-note">टीप: ज्यांनी तुम्हाला हे कोटेशन किंवा बिल पाठवले आहे, कृपया त्यांनाच कॉल करा.
+            <br><small>(Call the number who sent this to you)</small></p>
+          <a href="tel:+918805579296" class="call-option-btn">संतोष रसाळ<br>📱 8805579296</a>
+          <a href="tel:+919623266922" class="call-option-btn">काकासाहेब रसाळ<br>📱 9623266922</a>
+        </div>
+      </div>
+
+      <!-- Interactive Product Catalogue (Injected via JS) -->
+      <div id="catalogue-section" class="catalogue-section">
+        <!-- Content will be built here by renderCatalogue() -->
+      </div>
+
+      <!-- Customer Info Form (shown only for Quotation) -->
+      <div id="customer-form-wrapper" style="display:none;">
+        <div class="customer-form-section">
+          <h3>📝 Step 3: तुमची माहिती भरा</h3>
+          <div class="form-group">
+            <label>👤 पूर्ण नाव (Full Name) *</label>
+            <input type="text" id="cf-name" placeholder="उदा. रामदास पाटील" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>📱 मोबाईल नं. १ (Mobile 1) *</label>
+              <input type="tel" id="cf-phone1" placeholder="उदा. 9876543210" maxlength="10" />
+            </div>
+            <div class="form-group">
+              <label>📱 मोबाईल नं. २ (Mobile 2)</label>
+              <input type="tel" id="cf-phone2" placeholder="(पर्यायी / Optional)" maxlength="10" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>🏠 पत्ता (Address in words)</label>
+            <textarea id="cf-address"
+              placeholder="उदा. घर नं. ५, मुख्य रस्ता, कोल्हार, ता. राहाता, जि. अहमदनगर"></textarea>
+          </div>
+          <div class="form-group">
+            <label>📍 तुमचे घराचे लोकेशन शेअर करा (डिलिव्हरीसाठी उपयुक्त)</label>
+            <br>
+            <a class="btn-map-locate" id="btn-get-location" onclick="getCustomerLocation()">
+              📍 माझे लोकेशन आपोआप भरा
+            </a>
+            <span id="location-status"
+              style="display:inline-block;margin-left:10px;font-size:14px;font-weight:700;color:#555;"></span>
+            <input type="hidden" id="cf-lat" />
+            <input type="hidden" id="cf-lng" />
+            <div id="cf-map-preview" style="margin-top:10px;display:none;">
+              <iframe id="cf-map-iframe" width="100%" height="200" style="border:2px solid #ccc;border-radius:8px;"
+                allowfullscreen="" loading="lazy"></iframe>
+            </div>
+          </div>
+          <button class="btn-submit-order" id="btn-save-all" onclick="saveAll()">💾 ऑर्डर पाठवा (Save & Submit)</button>
+          <div class="order-success-msg" id="order-success-msg"></div>
+        </div>
+      </div>
+
+
+      <!-- UPI Payment Section (shown only for bills with balance > 0) -->
+      <!-- ══════════════════════════════════════════
+           UPI PAYMENT SECTION
+           Shows only for bills with balance > 0
+           Always mobile-friendly regardless of view toggle
+           ══════════════════════════════════════════ -->
+      <div id="upi-payment-section" class="upi-payment-section">
+
+        <!-- Header -->
+        <div class="upi-payment-header">
+          <span class="upi-header-icon">💳</span>
+          <span class="upi-header-title">UPI ने पेमेंट करा</span>
+          <span class="upi-header-sub">Pay using any UPI app on your phone</span>
+        </div>
+
+        <div class="upi-payment-body">
+
+          <!-- ── Amount Due ── -->
+          <div class="upi-amount-box">
+            <span class="upi-amount-label">तुमची बाकी रक्कम (Amount to Pay)</span>
+            <span class="upi-amount-value" id="upi-amount-display">₹0</span>
+            <span class="upi-amount-note" id="upi-bill-ref"></span>
+          </div>
+
+          <!-- ── STEP 1 : QR Scan ── -->
+          <div class="upi-step">
+            <div class="upi-step-heading">
+              <div class="upi-step-num">1</div>
+              <div>
+                <div class="upi-step-title">📷 QR Code स्कॅन करा</div>
+                <div class="upi-step-hint">GPay / PhonePe / Paytm उघडा → Scan करा → रक्कम दिसेल → Pay करा</div>
+              </div>
+            </div>
+            <div class="upi-qr-frame">
+              <div id="upi-qr-canvas"></div>
+              <div class="upi-qr-apps-row">
+                <span class="upi-qr-app-tag">📱 GPay</span>
+                <span class="upi-qr-app-tag">📱 PhonePe</span>
+                <span class="upi-qr-app-tag">📱 Paytm</span>
+                <span class="upi-qr-app-tag">📱 BHIM</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── OR divider ── -->
+          <div class="upi-or">किंवा (OR)</div>
+
+          <!-- ── STEP 2 : App Buttons ── -->
+          <div class="upi-step">
+            <div class="upi-step-heading">
+              <div class="upi-step-num">2</div>
+              <div>
+                <div class="upi-step-title">📲 तुमचे ॲप थेट उघडा</div>
+                <div class="upi-step-hint">खालील बटण दाबा — ॲप उघडेल आणि रक्कम आपोआप भरेल</div>
+              </div>
+            </div>
+
+            <div class="upi-app-buttons">
+
+              <!-- GPay -->
+              <a id="upi-btn-gpay" class="upi-app-btn upi-btn-gpay" target="_blank">
+                <div class="upi-btn-icon">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" height="26" alt="GPay">
+                </div>
+                <div class="upi-btn-text-wrap">
+                  <span class="upi-btn-main">Google Pay</span>
+                  <span class="upi-btn-sub">GPay वापरून पेमेंट करा</span>
+                </div>
+                <span class="upi-btn-arrow">›</span>
+              </a>
+
+              <!-- PhonePe -->
+              <a id="upi-btn-phonepe" class="upi-app-btn upi-btn-phonepe" target="_blank">
+                <div class="upi-btn-icon">
+                  <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/PhonePe_Logo.svg/120px-PhonePe_Logo.svg.png" height="26" alt="PhonePe"> -->
+                  <img src="https://e7.pngegg.com/pngimages/332/615/png-clipart-phonepe-india-unified-payments-interface-india-purple-violet.png" height="26" alt="PhonePe">
+                </div>
+                <div class="upi-btn-text-wrap">
+                  <span class="upi-btn-main">PhonePe</span>
+                  <span class="upi-btn-sub">PhonePe वापरून पेमेंट करा</span>
+                </div>
+                <span class="upi-btn-arrow">›</span>
+              </a>
+
+              <!-- Paytm -->
+              <a id="upi-btn-paytm" class="upi-app-btn upi-btn-paytm" target="_blank">
+                <div class="upi-btn-icon"></div>
+                <div class="upi-btn-text-wrap">
+                  <span class="upi-btn-main">Paytm</span>
+                  <span class="upi-btn-sub">Paytm वापरून पेमेंट करा</span>
+                </div>
+                <span class="upi-btn-arrow">›</span>
+              </a>
+
+              <!-- Generic / Other -->
+              <a id="upi-btn-generic" class="upi-app-btn upi-btn-generic" target="_blank">
+                <div class="upi-btn-icon">📲</div>
+                <div class="upi-btn-text-wrap">
+                  <span class="upi-btn-main">इतर कोणत्याही ॲपने</span>
+                  <span class="upi-btn-sub">BHIM, Amazon Pay किंवा इतर UPI ॲप</span>
+                </div>
+                <span class="upi-btn-arrow">›</span>
+              </a>
+
+            </div>
+          </div>
+
+          <!-- ── OR divider ── -->
+          <div class="upi-or">किंवा (OR)</div>
+
+          <!-- ── STEP 3 : Manual UPI ID ── -->
+          <div class="upi-step">
+            <div class="upi-step-heading">
+              <div class="upi-step-num">3</div>
+              <div>
+                <div class="upi-step-title">✍️ UPI ID टाकून पेमेंट करा</div>
+                <div class="upi-step-hint">तुमच्या ॲपमध्ये "Pay to UPI ID" निवडा → खालील ID कॉपी करा → Paste करा</div>
+              </div>
+            </div>
+            <div class="upi-id-card">
+              <span class="upi-id-card-label">दुकानाचा UPI ID (Shop UPI ID)</span>
+              <div class="upi-id-row">
+                <span class="upi-id-value" id="upi-id-display">—</span>
+                <button class="upi-copy-btn" onclick="copyUpiId()">📋 कॉपी करा</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── After payment reminder ── -->
+          <div class="upi-after-pay">
+            <span class="upi-after-pay-icon">📸</span>
+            <div class="upi-after-pay-text">
+              पेमेंट झाल्यावर स्क्रीनशॉट घ्या<br>आणि दुकानाला WhatsApp वर पाठवा
+            </div>
+            <span class="upi-after-pay-sub">(After payment, send screenshot to shop on WhatsApp)</span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="map-box">
+        <a href="https://maps.google.com/?q=Rasal+Cement+Products+Kolhar+Bhagwatipur" target="_blank" class="btn-map">
+          📍 दुकानाचे लोकेशन Google Maps वर पहा
+        </a>
+      </div>
+
+      <div class="footer">
+        <p class="marathi-note">हे संगणकीकृत बिल / कोटेशन आहे, यावर स्वाक्षरीची आवश्यकता नाही.</p>
+        <p class="english-note">(This is a computer generated invoice and does not require a physical signature.)</p>
+      </div>
+
+      <button class="btn-print" onclick="window.print()">🖨️ बिल प्रिंट करा / PDF म्हणून जतन करा</button>
+      <div class="save-status-msg" id="save-status-msg"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://qwvoemrxegkiivpllnoh.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3dm9lbXJ4ZWdraWl2cGxsbm9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMzgyMzYsImV4cCI6MjA5MjYxNDIzNn0.qC9ZSE-jO1ZnNXxTuK85aNDTh5fsRG0ScS9dH1XUQsk";
+
+    let currentBillData = null;
+    let isQuotationType = false;   // true when URL has type=quotation
+    let quotationUUID = null;      // UUID of row in quotations table
+
+    // Utility function to wrap text in the highlight class
+    function hl(text) {
+      return `<span class="hl-measure">${text}</span>`;
+    }
+
+    // Function to convert number to Marathi words
+    function numberToWordMarathi(num) {
+      if (num === 0) return 'शून्य';
+
+      // Complete Marathi words for 1–99
+      const marathiWords = [
+        '', 'एक', 'दोन', 'तीन', 'चार', 'पाच', 'सहा', 'सात', 'आठ', 'नऊ',
+        'दहा', 'अकरा', 'बारा', 'तेरा', 'चौदा', 'पंधरा', 'सोळा', 'सतरा', 'अठरा', 'एकोणीस',
+        'वीस', 'एकवीस', 'बावीस', 'तेवीस', 'चोवीस', 'पंचवीस', 'सव्वीस', 'सत्तावीस', 'अठ्ठावीस', 'एकोणतीस',
+        'तीस', 'एकतीस', 'बत्तीस', 'तेहतीस', 'चौतीस', 'पस्तीस', 'छत्तीस', 'सदतीस', 'अडतीस', 'एकोणचाळीस',
+        'चाळीस', 'एकेचाळीस', 'बेचाळीस', 'त्रेचाळीस', 'चव्वेचाळीस', 'पंचेचाळीस', 'सेहेचाळीस', 'सत्तेचाळीस', 'अठ्ठेचाळीस', 'एकोणपन्नास',
+        'पन्नास', 'एकावन्न', 'बावन्न', 'त्रेपन्न', 'चोपन्न', 'पंचावन्न', 'छप्पन्न', 'सत्तावन्न', 'अठ्ठावन्न', 'एकोणसाठ',
+        'साठ', 'एकसष्ट', 'बासष्ट', 'त्रेसष्ट', 'चौसष्ट', 'पासष्ट', 'सहासष्ट', 'सदुसष्ट', 'अडुसष्ट', 'एकोणसत्तर',
+        'सत्तर', 'एकाहत्तर', 'बाहत्तर', 'त्र्याहत्तर', 'चौर्‍याहत्तर', 'पंच्याहत्तर', 'शहात्तर', 'सत्याहत्तर', 'अठ्याहत्तर', 'एकोणऐंशी',
+        'ऐंशी', 'एक्याऐंशी', 'ब्याऐंशी', 'त्र्याऐंशी', 'चौऱ्याऐंशी', 'पंच्याऐंशी', 'शहाऐंशी', 'सत्याऐंशी', 'अठ्याऐंशी', 'एकोणनव्वद',
+        'नव्वद', 'एक्याण्णव', 'ब्याण्णव', 'त्र्याण्णव', 'चौऱ्याण्णव', 'पंच्याण्णव', 'शहाण्णव', 'सत्याण्णव', 'अठ्याण्णव', 'नव्याण्णव'
+      ];
+
+      // Marathi hundreds: एकशे, दोनशे, तीनशे, ... नऊशे
+      const hundreds = ['', 'एकशे', 'दोनशे', 'तीनशे', 'चारशे', 'पाचशे', 'सहाशे', 'सातशे', 'आठशे', 'नऊशे'];
+
+      // Convert a number 1–999 into Marathi words
+      function convertUpTo999(n) {
+        if (n === 0) return '';
+        if (n < 100) return marathiWords[n];
+        let h = Math.floor(n / 100);
+        let r = n % 100;
+        return hundreds[h] + (r !== 0 ? ' ' + marathiWords[r] : '');
+      }
+
+      // Indian number system: crore / lakh / thousand / remainder
+      let parts = [];
+
+      let crore = Math.floor(num / 10000000);
+      num = num % 10000000;
+      let lakh = Math.floor(num / 100000);
+      num = num % 100000;
+      let thousand = Math.floor(num / 1000);
+      num = num % 1000;
+      let remainder = num;
+
+      if (crore > 0)   parts.push(convertUpTo999(crore)   + ' कोटी');
+      if (lakh > 0)    parts.push(convertUpTo999(lakh)    + ' लाख');
+      if (thousand > 0) parts.push(convertUpTo999(thousand) + ' हजार');
+      if (remainder > 0) parts.push(convertUpTo999(remainder));
+
+      return parts.join(' ').trim();
+    }
+
+    function numberToWords(num) {
+      if (num === 0) return 'Zero';
+      const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+      const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+      const scales = ['', 'Thousand', 'Lakh', 'Crore'];
+
+      function convertGroup(n) {
+        if (n === 0) return '';
+        else if (n < 10) return ones[n];
+        else if (n < 20) return teens[n - 10];
+        else if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+        else return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' ' + convertGroup(n % 100) : '');
+      }
+
+      let parts = [];
+      let groupIndex = 0;
+      while (num > 0) {
+        if (groupIndex === 1) {
+          let group = num % 100;
+          if (group !== 0) parts.unshift(convertGroup(group) + ' ' + scales[groupIndex]);
+          num = Math.floor(num / 100);
+        } else {
+          let group = num % 1000;
+          if (group !== 0) parts.unshift(convertGroup(group) + (groupIndex > 0 ? ' ' + scales[groupIndex] : ''));
+          num = Math.floor(num / 1000);
+        }
+        groupIndex++;
+      }
+      return parts.join(' ').trim();
+    }
+
+    const cementProducts = [
+      { name: "400 mm गव्हाण (Gavhan)", category: "गव्हाण (Gavhan)", desc: `गुरांसाठी लहान गव्हाण. लांबी: अंदाजे ${hl('१.३ फूट')} (${hl('१६ इंच')}).`, price: 1000, unit: "per piece" },
+      { name: "600 mm गव्हाण (Gavhan)", category: "गव्हाण (Gavhan)", desc: `गुरांसाठी मध्यम गव्हाण. लांबी: अंदाजे ${hl('२ फूट')} (${hl('२४ इंच')}).`, price: 1400, unit: "per piece" },
+      { name: "700 mm गव्हाण (Gavhan)", category: "गव्हाण (Gavhan)", desc: `गुरांसाठी मोठी गव्हाण. लांबी: अंदाजे ${hl('२.३ फूट')} (${hl('२८ इंच')}).`, price: 1900, unit: "per piece" },
+      { name: "800 mm गव्हाण (Gavhan)", category: "गव्हाण (Gavhan)", desc: `गुरांसाठी सर्वात मोठी गव्हाण. लांबी: अंदाजे ${hl('२.६ फूट')} (${hl('३२ इंच')}).`, price: 2200, unit: "per piece" },
+
+      { name: "400 mm चौकोनी स्टँड", category: "गव्हाण स्टँड (Gavhan Stand)", desc: `${hl('१.३ फूट')} गव्हाण सुरक्षित ठेवण्यासाठी मजबूत स्टँड.`, price: 200, unit: "per piece" },
+      { name: "600 mm चौकोनी स्टँड", category: "गव्हाण स्टँड (Gavhan Stand)", desc: `${hl('२ फूट')} गव्हाणसाठी मजबूत चौकोनी स्टँड.`, price: 500, unit: "per piece" },
+      { name: "600 mm 6 इंच Y स्टँड", category: "गव्हाण स्टँड (Gavhan Stand)", desc: `${hl('२ फूट')} गव्हाणसाठी Y आकाराचे (${hl('६ इंच')}) मजबूत स्टँड.`, price: 450, unit: "per piece" },
+      { name: "600 mm 4 इंच Y स्टँड", category: "गव्हाण स्टँड (Gavhan Stand)", desc: `${hl('२ फूट')} गव्हाणसाठी Y आकाराचे (${hl('४ इंच')}) स्टँड.`, price: 350, unit: "per piece" },
+      { name: "700 mm चौकोनी स्टँड", category: "गव्हाण स्टँड (Gavhan Stand)", desc: `${hl('२.३ फूट')} गव्हाणसाठी मजबूत चौकोनी स्टँड.`, price: 600, unit: "per piece" },
+      { name: "700 mm Y स्टँड", category: "गव्हाण स्टँड (Gavhan Stand)", desc: `${hl('२.३ फूट')} गव्हाणसाठी Y आकाराचे स्टँड.`, price: 500, unit: "per piece" },
+      { name: "800 mm चौकोनी स्टँड", category: "गव्हाण स्टँड (Gavhan Stand)", desc: `${hl('२.६ फूट')} गव्हाणसाठी मजबूत चौकोनी स्टँड.`, price: 900, unit: "per piece" },
+
+      { name: "400 mm गव्हाण कॅप", category: "गव्हाण कॅप (Gavhan Cap)", desc: `${hl('१.३ फूट')} गव्हाणच्या बाजूला लावण्यासाठी कव्हर/कॅप.`, price: 50, unit: "per piece" },
+      { name: "600 mm गव्हाण कॅप", category: "गव्हाण कॅप (Gavhan Cap)", desc: `${hl('२ फूट')} गव्हाणच्या बाजूला लावण्यासाठी कव्हर/कॅप.`, price: 100, unit: "per piece" },
+      { name: "700 mm गव्हाण कॅप", category: "गव्हाण कॅप (Gavhan Cap)", desc: `${hl('२.३ फूट')} गव्हाणच्या बाजूला लावण्यासाठी कव्हर/कॅप.`, price: 150, unit: "per piece" },
+      { name: "800 mm गव्हाण कॅप", category: "गव्हाण कॅप (Gavhan Cap)", desc: `${hl('२.६ फूट')} गव्हाणच्या बाजूला लावण्यासाठी कव्हर/कॅप.`, price: 250, unit: "per piece" },
+
+      { name: "सिमेंट पोल - Type 1 (5x4 Inch)", category: "सिमेंट पोल (Cement Poles)", desc: `कंपाऊंडसाठी जाड आणि मजबूत पोल. ${hl('९ ते १३ फूट')} उपलब्ध, ${hl('१ ते ८ फूट')} ऑर्डरवर बनतो.`, price: 80, unit: "per foot" },
+      { name: "सिमेंट पोल - Type 2 (4x4 Inch)", category: "सिमेंट पोल (Cement Poles)", desc: `तार कुंपणासाठी मजबूत पोल. ${hl('२, ३, ४ फूट')} उपलब्ध, ${hl('५ ते ८ फूट')} ऑर्डरवर बनतो.`, price: 70, unit: "per foot" },
+
+      { name: "2x2 फूट ढापा (Cement Block)", category: "ढापा (Cement Block)", desc: `गटार किंवा खड्ड्यांवर ठेवण्यासाठी मजबूत ढापा (${hl('२ फूट x २ फूट')}).`, price: 400, unit: "per piece" },
+      { name: "3x2 फूट ढापा (Cement Block)", category: "ढापा (Cement Block)", desc: `मोठ्या खड्ड्यांसाठी मजबूत ढापा (${hl('३ फूट x २ फूट')}).`, price: 600, unit: "per piece" },
+
+      { name: "1000 लिटर पाण्याची टाकी", category: "पाण्याची टाकी (Water Tank)", desc: "पाणी साठवणुकीसाठी १००० लिटर क्षमतेची सिमेंट टाकी.", price: 5000, unit: "per piece" },
+      { name: "2000 लिटर पाण्याची टाकी", category: "पाण्याची टाकी (Water Tank)", desc: "पाणी साठवणुकीसाठी २००० लिटर क्षमतेची सिमेंट टाकी.", price: 7000, unit: "per piece" },
+      { name: "3000 लिटर पाण्याची टाकी", category: "पाण्याची टाकी (Water Tank)", desc: "पाणी साठवणुकीसाठी ३००० लिटर क्षमतेची मोठी सिमेंट टाकी.", price: 12000, unit: "per piece" },
+
+      { name: "600 mm सेप्टिक टाकी", category: "सेप्टिक टाकी (Septic Tank)", desc: `सांडपाणी व्यवस्थापनासाठी रेडीमेड सेप्टिक टाकी. (अंदाजे ${hl('२ फूट')}).`, price: 3500, unit: "per piece" },
+      { name: "700 mm सेप्टिक टाकी", category: "सेप्टिक टाकी (Septic Tank)", desc: `सांडपाणी व्यवस्थापनासाठी रेडीमेड सेप्टिक टाकी. (अंदाजे ${hl('२.३ फूट')}).`, price: 5000, unit: "per piece" },
+      { name: "800 mm सेप्टिक टाकी", category: "सेप्टिक टाकी (Septic Tank)", desc: `मोठ्या कुटुंबासाठी रेडीमेड सेप्टिक टाकी. (अंदाजे ${hl('२.६ फूट')}).`, price: 6000, unit: "per piece" },
+
+      { name: "100 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('४ इंच')} (${hl('0.3 फूट')}).`, price: 300, unit: "per piece" },
+      { name: "200 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('८ इंच')} (${hl('0.6 फूट')}).`, price: 550, unit: "per piece" },
+      { name: "300 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('१२ इंच')} (${hl('१ फूट')}).`, price: 700, unit: "per piece" },
+      { name: "500 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('२० इंच')} (${hl('१.६ फूट')}).`, price: 800, unit: "per piece" },
+      { name: "600 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('२४ इंच')} (${hl('२ फूट')}).`, price: 1000, unit: "per piece" },
+      { name: "700 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('२८ इंच')} (${hl('२.३ फूट')}).`, price: 1200, unit: "per piece" },
+      { name: "800 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('३२ इंच')} (${hl('२.६ फूट')}).`, price: 1500, unit: "per piece" },
+      { name: "1000 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('४० इंच')} (${hl('३.३ फूट')}).`, price: 2000, unit: "per piece" },
+      { name: "1200 mm सिमेंट पाईप - साधा", category: "सिमेंट पाईप (RCC Pipe)", desc: `साधा पाईप. व्यास: ${hl('४८ इंच')} (${hl('४ फूट')}).`, price: 2500, unit: "per piece" },
+
+      { name: "100 mm सिमेंट पाईप - सॉकेट", category: "सिमेंट पाईप (RCC Pipe)", desc: `सॉकेट पाईप (जोडण्यासाठी सोपे). व्यास: ${hl('४ इंच')} (${hl('0.3 फूट')}).`, price: 350, unit: "per piece" },
+      { name: "300 mm सिमेंट पाईप - सॉकेट", category: "सिमेंट पाईप (RCC Pipe)", desc: `सॉकेट पाईप (जोडण्यासाठी सोपे). व्यास: ${hl('१२ इंच')} (${hl('१ फूट')}).`, price: 600, unit: "per piece" },
+      { name: "400 mm सिमेंट पाईप - सॉकेट", category: "सिमेंट पाईप (RCC Pipe)", desc: `सॉकेट पाईप (जोडण्यासाठी सोपे). व्यास: ${hl('१६ इंच')} (${hl('१.३ फूट')}).`, price: 800, unit: "per piece" },
+      { name: "500 mm सिमेंट पाईप - सॉकेट", category: "सिमेंट पाईप (RCC Pipe)", desc: `सॉकेट पाईप (जोडण्यासाठी सोपे). व्यास: ${hl('२० इंच')} (${hl('१.६ फूट')}).`, price: 1000, unit: "per piece" },
+      { name: "1000 mm सिमेंट पाईप - सॉकेट", category: "सिमेंट पाईप (RCC Pipe)", desc: `सॉकेट पाईप (जोडण्यासाठी सोपे). व्यास: ${hl('४० इंच')} (${hl('३.३ फूट')}).`, price: 2200, unit: "per piece" },
+
+      { name: "खूटी (Khooti)", category: "खूटी / कडी (Khooti / Kadi)", desc: "गुरांना सुरक्षित बांधण्यासाठी सिमेंटची खूटी.", price: 100, unit: "per piece" },
+      { name: "कडी (Kadi)", category: "खूटी / कडी (Khooti / Kadi)", desc: "गुरांना बांधण्यासाठी लोखंडी कडी.", price: 100, unit: "per piece" }
+    ];
+
+    function toggleLayout() {
+      const isMobile = document.getElementById('layoutToggle').checked;
+      const meta = document.getElementById('viewport-meta');
+      if (isMobile) {
+        document.body.classList.add('card-layout');
+        meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+      } else {
+        document.body.classList.remove('card-layout');
+        meta.setAttribute('content', 'width=1020, user-scalable=yes');
+      }
+    }
+
+    window.toggleTripAccordion = function (index) {
+      const bodies = document.querySelectorAll('.trip-acc-body');
+      const icons = document.querySelectorAll('.trip-icon');
+      bodies.forEach((body, i) => {
+        if (i === index) {
+          const isClosed = body.style.display === 'none';
+          body.style.display = isClosed ? 'block' : 'none';
+          icons[i].innerText = isClosed ? '-' : '+';
+        } else {
+          body.style.display = 'none';
+          icons[i].innerText = '+';
+        }
+      });
+    }
+
+    window.toggleCatAccordion = function (index) {
+      const bodies = document.querySelectorAll('.cat-acc-body');
+      const icons = document.querySelectorAll('.cat-icon');
+
+      bodies.forEach((body, i) => {
+        if (i === index) {
+          const isClosed = body.style.display === 'none';
+          body.style.display = isClosed ? 'block' : 'none';
+          icons[i].innerText = isClosed ? '-' : '+';
+        } else {
+          body.style.display = 'none';
+          icons[i].innerText = '+';
+        }
+      });
+    }
+
+    window.toggleCatAccordion = function (index) {
+      const bodies = document.querySelectorAll('.cat-acc-body');
+      const icons = document.querySelectorAll('.cat-icon');
+      const headers = document.querySelectorAll('.cat-acc-header');
+
+      bodies.forEach((body, i) => {
+        if (i === index) {
+          const isClosed = body.style.display === 'none';
+          body.style.display = isClosed ? 'block' : 'none';
+          icons[i].innerText = isClosed ? '-' : '+';
+          if (isClosed) {
+            // Scroll just to the header, not the content
+            setTimeout(() => {
+              headers[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+          }
+        } else {
+          body.style.display = 'none';
+          icons[i].innerText = '+';
+        }
+      });
+    }
+
+    window.selectPoleHeight = function (btn, index) {
+      // Deselect all buttons in this grid
+      const grid = document.getElementById(`height-grid-${index}`);
+      grid.querySelectorAll('.pole-height-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const feet = parseInt(btn.getAttribute('data-feet'));
+      document.getElementById(`len-${index}`).value = feet;
+
+      // Show/hide on-order note
+      const noteEl = document.getElementById(`order-note-${index}`);
+      const isType1 = btn.classList.contains('on-order') && document.getElementById(`len-${index}`);
+      // Check if this button is an on-order button
+      if (btn.classList.contains('on-order')) {
+        noteEl.style.display = 'block';
+      } else {
+        noteEl.style.display = 'none';
+      }
+    }
+
+    // Reverse geocode: coords → human address → fill address field
+    async function reverseGeocodeAndFill(lat, lng) {
+      const addrField = document.getElementById('cf-address');
+      const status = document.getElementById('location-status');
+      try {
+        // Use OpenStreetMap Nominatim (free, no key required)
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=en`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data = await res.json();
+        if (data && data.display_name) {
+          // Build a clean address from parts
+          const a = data.address || {};
+          const parts = [
+            a.house_number,
+            a.road || a.pedestrian || a.path,
+            a.neighbourhood || a.suburb,
+            a.village || a.town || a.city_district || a.city,
+            a.county || a.state_district,
+            a.state,
+            a.postcode
+          ].filter(Boolean);
+          const englishAddr = parts.length > 0 ? parts.join(', ') : (data.display_name || '').replace(/^\d+\.\d+,\s*\d+\.\d+,?\s*/g, '').trim();
+          addrField.value = englishAddr;
+          status.innerHTML = `✅ लोकेशन मिळाले! <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:#0056b3;">नकाशावर पहा</a>`;
+          // Now auto-translate the filled address to Marathi
+          translateFieldToMarathi('cf-address');
+        } else {
+          status.innerHTML = `✅ लोकेशन मिळाले! <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:#0056b3;">नकाशावर पहा</a>`;
+        }
+      } catch (e) {
+        status.innerHTML = `✅ लोकेशन मिळाले! <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:#0056b3;">नकाशावर पहा</a> <span style="color:#e67e00;font-size:13px;">(पत्ता स्वयं-भरणे शक्य झाले नाही)</span>`;
+      }
+    }
+
+    window.getCustomerLocation = function () {
+      const status = document.getElementById('location-status');
+      if (!navigator.geolocation) {
+        status.textContent = '❌ तुमच्या ब्राउझरमध्ये GPS उपलब्ध नाही.';
+        return;
+      }
+      status.textContent = '⏳ लोकेशन शोधत आहे...';
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          document.getElementById('cf-lat').value = lat;
+          document.getElementById('cf-lng').value = lng;
+          const mapDiv = document.getElementById('cf-map-preview');
+          const mapIframe = document.getElementById('cf-map-iframe');
+          mapIframe.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+          mapDiv.style.display = 'block';
+          status.textContent = '⏳ पत्ता शोधत आहे...';
+          await reverseGeocodeAndFill(lat, lng);
+        },
+        (err) => {
+          status.textContent = '❌ लोकेशन मिळाले नाही. कृपया परवानगी द्या.';
+        }
+      );
+    }
+
+    // ===== English → Marathi translation
+    const translateTimers = {};
+
+    async function translateToMarathi(text) {
+      if (!text || !text.trim()) return null;
+      // Skip if already mostly Devanagari script
+      const asciiRatio = (text.match(/[a-zA-Z0-9\s,.]/g) || []).length / text.length;
+      if (asciiRatio < 0.5) return null;
+
+      try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|mr`;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+          return data.responseData.translatedText.trim();
+        }
+      } catch (e) { }
+      return null;
+    }
+
+    window.translateFieldToMarathi = async function (fieldId) {
+      const field = document.getElementById(fieldId);
+      if (!field) return;
+      const val = field.value.trim();
+      if (!val) return;
+      let badge = document.getElementById(`badge-${fieldId}`);
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.id = `badge-${fieldId}`;
+        badge.className = 'translating-badge';
+        field.parentNode.insertBefore(badge, field.nextSibling);
+      }
+      badge.textContent = '⏳ मराठीत अनुवाद होत आहे...';
+      const translated = await translateToMarathi(val);
+      if (translated && translated !== val) {
+        field.value = translated;
+        badge.textContent = '✅ मराठीत रूपांतरित';
+        setTimeout(() => { badge.textContent = ''; }, 3000);
+      } else if (translated === null) {
+        badge.textContent = '⚠️ अनुवाद उपलब्ध नाही';
+        setTimeout(() => { badge.textContent = ''; }, 3000);
+      } else {
+        badge.textContent = '';
+      }
+    }
+
+    function setupTranslationFields() {
+      const fields = ['cf-name', 'cf-address'];
+      fields.forEach(fid => {
+        const el = document.getElementById(fid);
+        if (!el) return;
+        el.addEventListener('blur', () => {
+          clearTimeout(translateTimers[fid]);
+          translateTimers[fid] = setTimeout(() => translateFieldToMarathi(fid), 400);
+        });
+      });
+    }
+
+    window.openCallModal = function () {
+      document.getElementById('call-modal').style.display = 'flex';
+    }
+
+    window.closeCallModal = function () {
+      document.getElementById('call-modal').style.display = 'none';
+    }
+
+    let wasCardLayout = false;
+    window.addEventListener('beforeprint', () => {
+      wasCardLayout = document.body.classList.contains('card-layout');
+      if (wasCardLayout) {
+        document.body.classList.remove('card-layout');
+        document.getElementById('viewport-meta').setAttribute('content', 'width=1020, user-scalable=yes');
+      }
+    });
+
+    window.addEventListener('afterprint', () => {
+      if (wasCardLayout) {
+        document.body.classList.add('card-layout');
+        document.getElementById('viewport-meta').setAttribute('content', 'width=device-width, initial-scale=1.0');
+      }
+    });
+
+    async function fetchBillData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const billId = urlParams.get('id');
+      const docType = (urlParams.get('type') || '').toLowerCase();
+
+      // Detect quotation mode via URL param: ?type=quotation&id=<UUID>
+      isQuotationType = (docType === 'quotation');
+
+      if (!billId) {
+        document.getElementById('loading-screen').innerHTML = "त्रुटी: बिलाचा ID सापडला नाही! (उदा. ?id=123 किंवा ?type=quotation&id=UUID)";
+        return;
+      }
+
+      try {
+        if (isQuotationType) {
+          // ---- QUOTATION: fetch via get_public_quotation RPC ----
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_quotation`, {
+            method: 'POST',
+            headers: {
+              "apikey": SUPABASE_ANON_KEY,
+              "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ req_uuid: billId })
+          });
+
+          const rows = await response.json();
+
+          if (!response.ok || (rows && rows.message)) {
+            document.getElementById('loading-screen').innerHTML = `<span style="color:red;">डेटाबेस एरर: ${(rows && rows.message) || 'Unknown Error'}</span>`;
+            return;
+          }
+
+          if (!rows || rows.length === 0) {
+            document.getElementById('loading-screen').innerHTML = `त्रुटी: हे कोटेशन अस्तित्वात नाही! <br><small>शोधलेला UUID: ${billId}</small>`;
+            return;
+          }
+
+          const row = rows[0];
+          quotationUUID = row.id; // store UUID for save
+
+          currentBillData = {
+            id: row.bill_number || row.id,
+            docType: "Quotation",
+            name: row.customer_name,
+            phone: row.customer_phone,
+            address: row.customer_address,
+            dateStr: row.date_str,
+            timeStr: row.time_str,
+            cart: row.cart || [],
+            trips: row.trips || [],
+            installments: row.installments || [],
+            transport: row.transport || 0,
+            cuttingCharges: row.cutting_charges || 0,
+            fittingCharges: row.fitting_charges || 0,
+            otherCharges: row.other_charges || 0,
+            discount: row.discount || 0,
+            grandTotal: row.grand_total || 0,
+            totalPaid: row.total_paid || 0,
+            balance: row.balance || 0,
+            billNote: row.bill_note,
+            amountInWords: row.amount_in_words,
+            showTripInfo: row.show_trip_info !== false,
+            deliveryMethod: row.delivery_method,
+            deliveryStatus: row.delivery_status,
+            quotationStatus: row.quotation_status,
+            convertedBillNumber: row.converted_bill_number,
+            lat: row.customer_lat || null,
+            lng: row.customer_lng || null
+          };
+
+        } else {
+          // ---- BILL: fetch via existing RPC ----
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_bill`, {
+            method: 'POST',
+            headers: {
+              "apikey": SUPABASE_ANON_KEY,
+              "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ req_id: billId })
+          });
+
+          const rows = await response.json();
+
+          if (rows.message || rows.code) {
+            document.getElementById('loading-screen').innerHTML = `<span style="color:red;">डेटाबेस एरर: ${rows.message || rows.hint || 'Unknown Error'}</span>`;
+            return;
+          }
+
+          if (!rows || rows.length === 0) {
+            document.getElementById('loading-screen').innerHTML = `त्रुटी: हे बिल अस्तित्वात नाही! <br><small>शोधलेला ID: ${billId}</small>`;
+            return;
+          }
+
+          const row = rows[0];
+          currentBillData = {
+            id: row.bill_number || row.id,
+            docType: row.doc_type,
+            name: row.customer_name,
+            phone: row.customer_phone,
+            address: row.customer_address,
+            dateStr: row.date_str,
+            timeStr: row.time_str,
+            cart: row.cart || [],
+            trips: row.trips || [],
+            installments: row.installments || [],
+            transport: row.transport || 0,
+            cuttingCharges: row.cutting_charges || 0,
+            fittingCharges: row.fitting_charges || 0,
+            otherCharges: row.other_charges || 0,
+            discount: row.discount || 0,
+            grandTotal: row.grand_total || 0,
+            totalPaid: row.total_paid || 0,
+            balance: row.balance || 0,
+            billNote: row.bill_note,
+            amountInWords: row.amount_in_words,
+            showTripInfo: row.show_trip_info !== false
+          };
+        }
+
+        if (typeof currentBillData.cart === 'string') { try { currentBillData.cart = JSON.parse(currentBillData.cart); } catch (e) { currentBillData.cart = []; } }
+        if (typeof currentBillData.trips === 'string') { try { currentBillData.trips = JSON.parse(currentBillData.trips); } catch (e) { currentBillData.trips = []; } }
+        if (typeof currentBillData.installments === 'string') { try { currentBillData.installments = JSON.parse(currentBillData.installments); } catch (e) { currentBillData.installments = []; } }
+
+        if (currentBillData.docType === "Quotation") {
+          document.getElementById('layoutToggle').checked = true;
+        } else {
+          document.getElementById('layoutToggle').checked = false;
+        }
+        toggleLayout();
+
+        renderBill(currentBillData);
+        if (currentBillData.docType === "Quotation") {
+          renderCatalogue();
+        }
+
+        // Show Save All button only if it's a quotation accessed via UUID
+        if (isQuotationType && quotationUUID) {
+          document.getElementById('btn-save-all').style.display = 'block';
+        }
+
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('desktop-wrapper').style.visibility = 'visible';
+
+      } catch (error) {
+        document.getElementById('loading-screen').innerHTML = "डेटा लोड करताना तांत्रिक त्रुटी आली.";
+      }
+    }
+
+    function generateTripHtml(tr) {
+      let prodHtml = "";
+      if (tr.products && tr.products.length > 0) {
+        prodHtml = `
+          <div class="trip-products-box">
+            <strong>पाठवलेले साहित्य (Products):</strong>
+            <ul>
+              ${tr.products.map(p => `<li>${p.qty} x ${p.name}</li>`).join('')}
+            </ul>
+          </div>`;
+      }
+
+      return `
+        <div style="padding: 15px;">
+          <div class="trip-detail-line"><strong>वाहन (Vehicle):</strong> <span>${tr.vehicle || "-"}</span></div>
+          <div class="trip-detail-line"><strong>ड्रायव्हर (Driver):</strong> <span>${tr.driver || "-"}</span></div>
+          <div class="trip-detail-line"><strong>मोबाईल (Phone):</strong> <span>${tr.phone ? `<a href="tel:${tr.phone}" class="phone-link" style="font-size:18px;">${tr.phone}</a>` : '-'}</span></div>
+          ${tr.deliveryStatus ? `<div class="trip-detail-line"><strong>स्थिती (Status):</strong> <span>${tr.deliveryStatus}</span></div>` : ''}
+          <div class="trip-detail-line"><strong>नोंद (Note):</strong> <span>${tr.note || "-"}</span></div>
+          ${prodHtml}
+        </div>
+      `;
+    }
+
+    function renderCatalogue() {
+      const container = document.getElementById('catalogue-section');
+      let html = `
+        <div class="catalogue-header">
+          <h2>🛒 Step 2: आमची उत्पादने निवडा</h2>
+          <p>तुमच्या कोटेशनमध्ये आणखी उत्पादने जोडा. पाहण्यासाठी खालील नावांवर क्लिक करा.</p>
+        </div>
+      `;
+
+      const grouped = {};
+      cementProducts.forEach((p, i) => {
+        if (!grouped[p.category]) grouped[p.category] = [];
+        grouped[p.category].push({ ...p, originalIndex: i });
+      });
+
+      let catIndex = 0;
+      for (let cat in grouped) {
+        html += `
+          <div class="cat-acc-container">
+            <div class="cat-acc-header" onclick="toggleCatAccordion(${catIndex})">
+              <span>${cat}</span>
+              <span id="cat-icon-${catIndex}" class="cat-icon">+</span>
+            </div>
+            <div id="cat-body-${catIndex}" class="cat-acc-body" style="display: none;">
+              <div class="product-grid">
+        `;
+
+        grouped[cat].forEach(prod => {
+          let lengthSelector = '';
+          if (prod.category === 'सिमेंट पोल (Cement Poles)') {
+            const isType1 = prod.name.includes('Type 1'); // 5x4 inch
+            if (isType1) {
+              // 5x4: 9-13 available, 1-8 on order
+              let btnHtml = '';
+              for (let f = 1; f <= 13; f++) {
+                const onOrder = f <= 8;
+                btnHtml += `<button class="pole-height-btn${onOrder ? ' on-order' : ''}" data-feet="${f}" onclick="selectPoleHeight(this, ${prod.originalIndex})">${f} फूट${onOrder ? ' 🔧' : ''}</button>`;
+              }
+              lengthSelector = `
+                <div class="pole-height-selector">
+                  <label>उंची निवडा (Select Height):</label>
+                  <div class="pole-height-grid" id="height-grid-${prod.originalIndex}">${btnHtml}</div>
+                  <div class="pole-order-note" id="order-note-${prod.originalIndex}">🔧 ही उंची ऑर्डरवर बनवली जाईल (Made on order)</div>
+                  <input type="hidden" id="len-${prod.originalIndex}" value="">
+                </div>`;
+            } else {
+              // 4x4: 2,3,4 available; 5-8 on order
+              let btnHtml = '';
+              for (let f = 1; f <= 8; f++) {
+                const notAvail = f === 1;
+                const onOrder = f >= 5;
+                if (notAvail) continue; // 1 ft not available for 4x4
+                btnHtml += `<button class="pole-height-btn${onOrder ? ' on-order' : ''}" data-feet="${f}" onclick="selectPoleHeight(this, ${prod.originalIndex})">${f} फूट${onOrder ? ' 🔧' : ''}</button>`;
+              }
+              lengthSelector = `
+                <div class="pole-height-selector">
+                  <label>उंची निवडा (Select Height):</label>
+                  <div class="pole-height-grid" id="height-grid-${prod.originalIndex}">${btnHtml}</div>
+                  <div class="pole-order-note" id="order-note-${prod.originalIndex}">🔧 ही उंची ऑर्डरवर बनवली जाईल (Made on order)</div>
+                  <input type="hidden" id="len-${prod.originalIndex}" value="">
+                </div>`;
+            }
+          }
+
+          let displayTitle = prod.name;
+          if (prod.category === 'सिमेंट पोल (Cement Poles)') {
+            displayTitle = prod.name.replace(" - Type 1", "").replace(" - Type 2", "");
+          }
+
+          html += `
+            <div class="product-card">
+              <div>
+                <div class="product-name">${displayTitle}</div>
+                <div class="product-desc">${prod.desc}</div>
+                <div class="product-price">₹${prod.price} / ${prod.unit === 'per foot' ? 'फूट' : 'नग'}</div>
+              </div>
+              <div>
+                ${lengthSelector}
+                <div class="cat-add-group">
+                  <input type="number" id="qty-${prod.originalIndex}" min="1" value="1" class="cat-qty-input">
+                  <button class="add-cart-btn" onclick="addToCart(${prod.originalIndex})">🛒 कोटेशनमध्ये जोडा</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+              </div>
+            </div>
+          </div>
+        `;
+        catIndex++;
+      }
+
+      container.innerHTML = html;
+    }
+
+    window.addToCart = function (index) {
+      const prod = cementProducts[index];
+      const qtyInput = document.getElementById(`qty-${index}`);
+      let qty = parseInt(qtyInput.value) || 1;
+      let name = prod.name;
+      let price = prod.price;
+
+      if (prod.category === "सिमेंट पोल (Cement Poles)") {
+        const lengthInput = document.getElementById(`len-${index}`);
+        const length = parseInt(lengthInput.value);
+        const isType1 = prod.name.includes('Type 1');
+        const maxLen = isType1 ? 13 : 8;
+        if (!length || length < 1 || length > maxLen) {
+          alert(`कृपया प्रथम उंची निवडा (Please select height first).`);
+          return;
+        }
+
+        let cleanName = prod.name.replace(" - Type 1", "").replace(" - Type 2", "");
+        const isOnOrder = isType1 ? (length <= 8) : (length >= 5);
+        name = `${cleanName} (${length} फूट)${isOnOrder ? ' [ऑर्डरवर]' : ''}`;
+        price = prod.price * length;
+      }
+
+      let existing = currentBillData.cart.find(item => item.name === name);
+      if (existing) {
+        existing.qty += qty;
+        existing.total = existing.qty * existing.price;
+      } else {
+        currentBillData.cart.push({
+          name: name,
+          price: price,
+          qty: qty,
+          total: price * qty
+        });
+      }
+      recalculateAndRender();
+
+      qtyInput.value = 1;
+    }
+
+    window.updateCartItemQty = function (index, newQty) {
+      newQty = parseInt(newQty);
+      if (newQty > 0) {
+        currentBillData.cart[index].qty = newQty;
+        currentBillData.cart[index].total = newQty * currentBillData.cart[index].price;
+        recalculateAndRender();
+      }
+    }
+
+    window.removeCartItem = function (index) {
+      currentBillData.cart.splice(index, 1);
+      recalculateAndRender();
+    }
+
+    function recalculateAndRender() {
+      let newSubtotal = currentBillData.cart.reduce((sum, item) => sum + item.total, 0);
+      currentBillData.grandTotal = newSubtotal
+        + Number(currentBillData.transport || 0)
+        + Number(currentBillData.cuttingCharges || 0)
+        + Number(currentBillData.fittingCharges || 0)
+        + Number(currentBillData.otherCharges || 0)
+        - Number(currentBillData.discount || 0);
+
+      currentBillData.balance = currentBillData.grandTotal - Number(currentBillData.totalPaid || 0);
+      renderBill(currentBillData, true);
+    }
+
+    function renderBill(data, isLiveUpdate = false) {
+      if (!Array.isArray(data.cart)) data.cart = [];
+
+      let billIdText = data.id || "-";
+      document.getElementById('doc-title').innerText = data.docType === "Quotation"
+        ? `कोटेशन (${billIdText})`
+        : `पक्के बिल (${billIdText})`;
+
+      let isQuotation = data.docType === "Quotation";
+      if (isQuotation) {
+        document.getElementById('catalogue-section').style.display = 'block';
+        document.getElementById('customer-form-wrapper').style.display = 'block';
+
+        // Pre-fill form fields from existing data
+        if (data.name) {
+          const phones = (data.phone || '').split('/');
+          document.getElementById('cf-name').value = data.name;
+          if (phones[0]) document.getElementById('cf-phone1').value = phones[0].trim();
+          if (phones[1]) document.getElementById('cf-phone2').value = phones[1].trim();
+          if (data.address) document.getElementById('cf-address').value = data.address;
+          // Pre-fill coordinates if available
+          if (data.lat && data.lng) {
+            document.getElementById('cf-lat').value = data.lat;
+            document.getElementById('cf-lng').value = data.lng;
+            const mapDiv = document.getElementById('cf-map-preview');
+            const mapIframe = document.getElementById('cf-map-iframe');
+            mapIframe.src = `https://maps.google.com/maps?q=${data.lat},${data.lng}&z=15&output=embed`;
+            mapDiv.style.display = 'block';
+            document.getElementById('location-status').innerHTML =
+              `✅ जतन केलेले लोकेशन: <a href="https://maps.google.com/?q=${data.lat},${data.lng}" target="_blank" style="color:#0056b3;">नकाशावर पहा</a>`;
+          }
+        }
+      } else {
+        document.getElementById('catalogue-section').style.display = 'none';
+        document.getElementById('customer-form-wrapper').style.display = 'none';
+      }
+
+      document.getElementById('call-shop-btn').style.display = 'block';
+
+      // Show help guide on first render only
+      if (!isLiveUpdate) { showHelpGuide(isQuotation); }
+
+      // Reorder sections based on document type
+      if (!isLiveUpdate) {
+        reorderSections(isQuotation);
+        const s1 = document.getElementById('step1-label');
+        if (s1) s1.style.display = isQuotation ? 'block' : 'none';
+      }
+
+      document.getElementById('customer-name').innerHTML = `ग्राहकाचे नाव: <span class="val-name">${data.name || data["Customer Name"] || "नाव उपलब्ध नाही"}</span>`;
+
+      if (data.address) {
+        const addrElem = document.getElementById('customer-address');
+        addrElem.style.display = 'block';
+        addrElem.innerHTML = `पत्ता: <span class="val-address">${data.address}</span>`;
+      }
+
+      let phoneHTML = `मोबाईल: <span class="val-phone">`;
+      if (data.phone || data["Mobile No"]) {
+        let p = data.phone || data["Mobile No"];
+        let pArr = String(p).split('/');
+        phoneHTML += pArr.map(num => `<a href="tel:${num.trim()}" class="phone-link">${num.trim()}</a>`).join('<span class="phone-sep"> / </span>');
+      } else {
+        phoneHTML += "-";
+      }
+      phoneHTML += `</span>`;
+      document.getElementById('customer-phone').innerHTML = phoneHTML;
+
+      document.getElementById('bill-id').innerText = data.id || "-";
+      document.getElementById('bill-date').innerText = data.dateStr || data["Date"] || "-";
+      document.getElementById('bill-time').innerText = data.timeStr || "-";
+
+      let cartHTML = "";
+      let highlightClass = isLiveUpdate ? 'highlight-update' : '';
+
+      if (data.cart.length > 0) {
+        data.cart.forEach((item, i) => {
+          let qtyContent = isQuotation
+            ? `<input type="number" min="1" class="qty-input" value="${item.qty || 0}" onchange="updateCartItemQty(${i}, this.value)">`
+            : (item.qty || 0);
+
+          let removeBtn = isQuotation
+            ? `<button class="btn-remove-item" onclick="removeCartItem(${i})">✖</button>`
+            : "";
+
+          cartHTML += `
+          <tr>
+            <td class="center" data-label="अ.क्र.">${i + 1}</td>
+            <td data-label="तपशील">${item.name || item.product_name || "Unknown"} ${removeBtn}</td>
+            <td class="center ${highlightClass}" data-label="नग">${qtyContent}</td>
+            <td class="right" data-label="दर (₹)">₹${Number(item.price || 0).toLocaleString('en-IN')}/-</td>
+            <td class="right ${highlightClass}" data-label="रक्कम (₹)">₹${Number(item.total || 0).toLocaleString('en-IN')}/-</td>
+          </tr>`;
+        });
+      } else {
+        cartHTML = `<tr><td colspan="5" class="center">बिलामध्ये कोणतेही साहित्य नाही.</td></tr>`;
+      }
+
+      const addCharge = (label, amount, prefix = '') => {
+        if (Number(amount) > 0) {
+          cartHTML += `<tr class="charge-row"><td colspan="4" class="right"><strong>${label}:</strong></td><td class="right">${prefix}₹${Number(amount).toLocaleString('en-IN')}/-</td></tr>`;
+        }
+      };
+      addCharge("वाहतूक खर्च", data.transport);
+      addCharge("कटिंग चार्ज", data.cuttingCharges);
+      addCharge("फिटिंग / सेटअप चार्ज", data.fittingCharges);
+      addCharge("इतर खर्च", data.otherCharges);
+      addCharge("सूट / वजावट", data.discount, "- ");
+
+      document.getElementById('cart-table-body').innerHTML = cartHTML;
+
+      if (data.billNote) {
+        document.getElementById('bill-note-box').style.display = 'block';
+        document.getElementById('bill-note').innerText = data.billNote;
+      }
+
+      if (data.trips && data.trips.length > 0 && data.showTripInfo !== false) {
+        document.getElementById('trips-section').style.display = 'block';
+        let tripContainer = document.getElementById('trips-container');
+
+        if (data.trips.length === 1) {
+          tripContainer.innerHTML = `
+            <div style="border-bottom: 1px solid #ccc; padding: 10px 15px; background: #f8f9fa;">
+              <strong>Trip No. 1</strong>
+            </div>
+            ${generateTripHtml(data.trips[0])}
+          `;
+        } else {
+          let multiHtml = data.trips.map((tr, ti) => `
+            <div>
+              <div class="trip-acc-header" onclick="toggleTripAccordion(${ti})">
+                <span>Trip No. ${ti + 1} ${tr.vehicle ? `- ${tr.vehicle}` : ''}</span>
+                <span id="trip-icon-${ti}" class="trip-icon">+</span>
+              </div>
+              <div id="trip-body-${ti}" class="trip-acc-body" style="display: none;">
+                ${generateTripHtml(tr)}
+              </div>
+            </div>
+          `).join('');
+          tripContainer.innerHTML = multiHtml;
+        }
+      }
+
+      let grandTotalAmount = Number(data.grandTotal || data["Bill Amount"] || 0);
+      let totalsHTML = `
+        <div class="totals-row grand-total ${highlightClass}">
+          <span>एकूण रक्कम:</span>
+          <span>₹${grandTotalAmount.toLocaleString('en-IN')}/-</span>
+        </div>
+        <div class="totals-row" style="font-style: italic; color: #666;">
+          <span><strong>अक्षरी:</strong> ${numberToWordMarathi(Math.floor(grandTotalAmount))} रुपये फक्त</span>
+        </div>`;
+
+      if (!isQuotation) {
+        if (data.installments && data.installments.length > 0) {
+          data.installments.forEach((inst, ii) => {
+            let label = (inst.mode === 'cash' ? 'रोख हप्ता' : 'ऑनलाइन हप्ता') + ` ${ii + 1}` + (inst.isDelivery ? ' (डिलि.)' : '');
+            totalsHTML += `<div class="totals-row"><span>${label}:</span><span>₹${Number(inst.amount).toLocaleString('en-IN')}/-</span></div>`;
+          });
+        } else {
+          totalsHTML += `<div class="totals-row"><span>ॲडव्हान्स जमा:</span><span>₹${Number(data.advance || 0).toLocaleString('en-IN')}/-</span></div>`;
+          if (data.paidOnDel > 0) {
+            totalsHTML += `<div class="totals-row"><span>डिलिव्हरीनंतर दिले:</span><span>₹${Number(data.paidOnDel).toLocaleString('en-IN')}/-</span></div>`;
+          }
+        }
+
+        let totalPaid = Number(data.totalPaid || data["Amount Paid"] || 0);
+        totalsHTML += `<div class="totals-row"><span>एकूण जमा:</span><span>₹${totalPaid.toLocaleString('en-IN')}/-</span></div>`;
+
+        let bal = Number(data.balance || data["Pending Amount"] || 0);
+        if (bal > 0) {
+          totalsHTML += `<div class="totals-row balance-due ${highlightClass}"><span>बाकी:</span><span>₹${bal.toLocaleString('en-IN')}/-</span></div>`;
+        } else {
+          totalsHTML += `<div class="totals-row balance-clear"><span>पूर्ण चुकता</span><span>₹ 0/-</span></div>`;
+        }
+      }
+
+      document.getElementById('totals-box').innerHTML = totalsHTML;
+
+      // Render UPI payment section for bills with outstanding balance
+      if (!isQuotation) {
+        const bal = Number(data.balance ?? data["Pending Amount"] ?? 0);
+        renderUpiSection(bal, data.id);
+      } else {
+        const upiSec = document.getElementById('upi-payment-section');
+        if (upiSec) upiSec.style.display = 'none';
+      }
+
+      if (isLiveUpdate) {
+        setTimeout(() => {
+          document.querySelectorAll('.highlight-update').forEach(el => {
+            el.classList.remove('highlight-update');
+          });
+        }, 500);
+      }
+    }
+
+    // ===== UNIFIED SAVE: Cart + Customer Info + Charges in ONE call =====
+    window.saveAll = async function () {
+      if (!isQuotationType || !quotationUUID) {
+        alert('हे कोटेशन नाही किंवा UUID सापडला नाही.');
+        return;
+      }
+
+      // --- Read customer form fields ---
+      const name = document.getElementById('cf-name').value.trim();
+      const phone1 = document.getElementById('cf-phone1').value.trim();
+      const phone2 = document.getElementById('cf-phone2').value.trim();
+      let address = document.getElementById('cf-address').value.trim();
+      const lat = document.getElementById('cf-lat').value;
+      const lng = document.getElementById('cf-lng').value;
+
+ 
+
+
+
+      if (!name) { alert('कृपया नाव टाका (Please enter your name).'); return; }
+      if (!phone1 || phone1.length < 10) { alert('कृपया मोबाईल नं. १ टाका (Please enter Mobile 1, 10 digits).'); return; }
+
+      const combinedPhone = phone2 ? `${phone1}/${phone2}` : phone1;
+
+      // --- Recalculate totals from cart ---
+      let subtotal = currentBillData.cart.reduce((sum, item) => sum + (item.total || 0), 0);
+      currentBillData.grandTotal = subtotal
+        + Number(currentBillData.transport || 0)
+        + Number(currentBillData.cuttingCharges || 0)
+        + Number(currentBillData.fittingCharges || 0)
+        + Number(currentBillData.otherCharges || 0)
+        - Number(currentBillData.discount || 0);
+      currentBillData.balance = currentBillData.grandTotal - Number(currentBillData.totalPaid || 0);
+
+      // --- Build unified payload ---
+      const payload = {
+        req_uuid: quotationUUID,
+        // Customer info
+        p_customer_name: name,
+        p_customer_phone: combinedPhone,
+        p_customer_address: address || null,
+        p_customer_lat: lat ? parseFloat(lat) : null,
+        p_customer_lng: lng ? parseFloat(lng) : null,
+        // Cart & charges
+        p_cart: currentBillData.cart,
+        p_transport: Number(currentBillData.transport || 0),
+        p_cutting_charges: Number(currentBillData.cuttingCharges || 0),
+        p_fitting_charges: Number(currentBillData.fittingCharges || 0),
+        p_other_charges: Number(currentBillData.otherCharges || 0),
+        p_discount: Number(currentBillData.discount || 0),
+        p_grand_total: Number(currentBillData.grandTotal || 0),
+        p_total_paid: Number(currentBillData.totalPaid || 0),
+        p_balance: Number(currentBillData.balance || 0),
+        p_bill_note: currentBillData.billNote || null,
+        p_amount_in_words: currentBillData.amountInWords || null,
+        p_installments: currentBillData.installments || [],
+        p_trips: currentBillData.trips || []
+      };
+
+      const btn = document.getElementById('btn-save-all');
+      const successEl = document.getElementById('order-success-msg');
+      const statusEl = document.getElementById('save-status-msg');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ ऑर्डर पाठवत आहे...';
+      successEl.style.display = 'none';
+      statusEl.style.display = 'none';
+      statusEl.className = 'save-status-msg';
+
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/save_quotation_full`, {
+          method: 'POST',
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const resultText = await response.text();
+
+        if (response.ok) {
+          // Update local state so rendered bill reflects saved data
+          currentBillData.name = name;
+          currentBillData.phone = combinedPhone;
+          currentBillData.address = address;
+          if (lat && lng) { currentBillData.lat = parseFloat(lat); currentBillData.lng = parseFloat(lng); }
+          renderBill(currentBillData);
+
+          successEl.textContent = '✅ तुमची ऑर्डर दुकानाला पाठवली गेली! लवकरच संपर्क केला जाईल.';
+          successEl.style.display = 'block';
+          btn.textContent = '✅ ऑर्डर पाठवली!';
+          setTimeout(() => {
+            btn.textContent = '💾 ऑर्डर पाठवा (Save & Submit)';
+            btn.disabled = false;
+          }, 3000);
+        } else {
+          let errMsg = `HTTP ${response.status}`;
+          try { const j = JSON.parse(resultText); errMsg += ': ' + (j.message || j.hint || JSON.stringify(j)); } catch (e) { errMsg += ': ' + resultText; }
+          statusEl.textContent = `❌ एरर: ${errMsg}`;
+          statusEl.classList.add('error');
+          statusEl.style.display = 'block';
+          btn.textContent = '💾 ऑर्डर पाठवा (Save & Submit)';
+          btn.disabled = false;
+        }
+      } catch (error) {
+        statusEl.textContent = `❌ नेटवर्क एरर: ${error.message}`;
+        statusEl.classList.add('error');
+        statusEl.style.display = 'block';
+        btn.textContent = '💾 ऑर्डर पाठवा (Save & Submit)';
+        btn.disabled = false;
+      }
+    }
+
+
+
+    // ===== UPI PAYMENT SECTION =====
+    const UPI_VPA  = '9356652711@ibl';   // ← REPLACE with real UPI ID
+    const UPI_NAME = 'Rasal';
+
+    function buildUpiUrl(app, amount, billId) {
+      const pa  = encodeURIComponent(UPI_VPA);
+      const pn  = encodeURIComponent(UPI_NAME);
+      const am  = Number(amount).toFixed(2);
+      const tr  = encodeURIComponent('BILL-' + (billId || 'REF'));
+      const tn  = encodeURIComponent('Payment for Bill ' + (billId || ''));
+      const cu  = 'INR';
+      const params = `pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
+
+      // WHY intent:// FORMAT?
+      // Chrome on Android does NOT support plain custom URI schemes (upi://, gpay://, etc.)
+      // Chrome requires the Android Intent syntax: intent://HOST?PARAMS#Intent;scheme=SCHEME;package=PKG;end
+      // This works across Chrome AND all other browsers on Android.
+      // Omitting package= on the generic button lets Android show a chooser of ALL installed UPI apps.
+
+      const fallbackPlay = 'https://play.google.com/store/apps/details?id=';
+
+      if (app === 'gpay') {
+        const pkg = 'com.google.android.apps.nbu.paisa.user';
+        return `intent://upi/pay?${params}#Intent;scheme=gpay;package=${pkg};S.browser_fallback_url=${encodeURIComponent(fallbackPlay + pkg)};end`;
+      }
+      if (app === 'phonepe') {
+        const pkg = 'com.phonepe.app';
+        return `intent://upi/pay?${params}#Intent;scheme=phonepe;package=${pkg};S.browser_fallback_url=${encodeURIComponent(fallbackPlay + pkg)};end`;
+      }
+      if (app === 'paytm') {
+        const pkg = 'net.one97.paytm';
+        return `intent://upi/pay?${params}#Intent;scheme=paytmmp;package=${pkg};S.browser_fallback_url=${encodeURIComponent(fallbackPlay + pkg)};end`;
+      }
+      // GENERIC — no package= → Android shows a chooser of ALL installed UPI apps
+      // This is the fix for the "इतर UPI ॲपने पेमेंट करा" button not working in Chrome
+      return `intent://upi/pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${encodeURIComponent('https://www.bhimupi.org.in/')};end`;
+    }
+
+    function renderUpiSection(balance, billId) {
+      const section = document.getElementById('upi-payment-section');
+      if (!section) return;
+
+      if (balance <= 0) {
+        section.style.display = 'none';
+        return;
+      }
+
+      section.style.display = 'block';
+
+      // Amount display
+      document.getElementById('upi-amount-display').textContent =
+        '₹' + Number(balance).toLocaleString('en-IN') + '/-';
+      document.getElementById('upi-bill-ref').textContent =
+        'बिल क्र. (Bill No.): ' + (billId || '-');
+
+      // UPI ID display
+      document.getElementById('upi-id-display').textContent = UPI_VPA;
+
+      // Build URLs
+      const genericUrl = buildUpiUrl('generic', balance, billId);
+      document.getElementById('upi-btn-gpay').href    = buildUpiUrl('gpay', balance, billId);
+      document.getElementById('upi-btn-phonepe').href = buildUpiUrl('phonepe', balance, billId);
+      document.getElementById('upi-btn-paytm').href   = buildUpiUrl('paytm', balance, billId);
+      document.getElementById('upi-btn-generic').href = genericUrl;
+
+      // QR Code — use plain upi:// scheme (NOT intent://)
+      // QR is scanned by camera inside a UPI app — Chrome is not involved.
+      // Plain upi://pay? is the correct NPCI-specified format for QR codes.
+      const pa2  = encodeURIComponent(UPI_VPA);
+      const pn2  = encodeURIComponent(UPI_NAME);
+      const am2  = Number(balance).toFixed(2);
+      const tr2  = encodeURIComponent('BILL-' + (billId || 'REF'));
+      const tn2  = encodeURIComponent('Payment for Bill ' + (billId || ''));
+      const qrUrl = `upi://pay?pa=${pa2}&pn=${pn2}&am=${am2}&tr=${tr2}&tn=${tn2}&cu=INR`;
+
+      const qrContainer = document.getElementById('upi-qr-canvas');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: qrUrl,
+        width: 200,
+        height: 200,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    window.copyUpiId = function () {
+      navigator.clipboard.writeText(UPI_VPA).then(() => {
+        const btn = document.querySelector('.upi-copy-btn');
+        const orig = btn.textContent;
+        btn.textContent = '✅ कॉपी झाले!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      }).catch(() => {
+        prompt('UPI ID कॉपी करा:', UPI_VPA);
+      });
+    };
+    // ===== END UPI PAYMENT SECTION =====
+
+    // ===== HELP GUIDE SYSTEM =====
+    const BILL_STEPS = [
+      { icon: "📄", mr: "वरती तुमचे बिल दिसेल — वस्तूंची यादी, दर आणि एकूण रक्कम तपासा.", en: "Check your bill — items, rates and total amount." },
+      { icon: "📞", mr: "शंका असल्यास खाली 'दुकानात कॉल करा' बटण दाबा.", en: "Tap 'Call Shop' if you have any questions." },
+      { icon: "📍", mr: "दुकानाचे लोकेशन पाहण्यासाठी 'दुकानचे लोकेशन पहा' दाबा.", en: "Tap 'View Location' to find our shop on Google Maps." },
+      { icon: "🖨️", mr: "बिल डाउनलोड करायचे असल्यास 'Print / Save as PDF' दाबा.", en: "Tap 'Print / Save as PDF' to download your bill." }
+    ];
+
+    const QUOTATION_STEPS = [
+      { icon: "📋", mr: "वरती तुमचे कोटेशन (अंदाजपत्रक) दिसेल — वस्तू आणि किमती तपासा.", en: "Review your quotation — check items and prices." },
+      { icon: "🛒", mr: "खाली 'आमची उत्पादने' मध्ये अजून वस्तू निवडा आणि 'कोटेशनमध्ये जोडा' दाबा.", en: "Browse the catalogue below and tap '+ Add to Quotation' for more items." },
+      { icon: "✏️", mr: "कोटेशनमधील वस्तूंची संख्या बदलता येते किंवा ✖ दाबून काढता येते.", en: "You can change quantities or remove items using ✖." },
+      { icon: "📝", mr: "'ऑर्डर तपशील भरा' मध्ये तुमचे नाव, मोबाईल नं. आणि पत्ता भरा.", en: "Fill your name, mobile number and address in the order form." },
+      { icon: "📍", mr: "'माझे लोकेशन शेअर करा' दाबल्यास आपोआप पत्ता भरला जाईल.", en: "Tap 'Share My Location' to auto-fill your address from GPS." },
+      { icon: "💾", mr: "शेवटी 'सर्व जतन करा' दाबा — तुमची ऑर्डर दुकानाला जाईल.", en: "Finally tap 'Save All' — your order will be sent to the shop." }
+    ];
+
+    const BILL_TIP = "💡 टीप: हे बिल फक्त वाचण्यासाठी आहे. बदल करायचे असल्यास दुकानाशी संपर्क करा. (This bill is read-only. Contact the shop for changes.)";
+    const QUOTATION_TIP = "💡 टीप: 'सर्व जतन करा' दाबल्याशिवाय तुमची ऑर्डर नोंदवली जाणार नाही! (Your order is NOT saved until you tap 'Save All'.)";
+
+    function buildStepsHTML(steps) {
+      return steps.map(s => `<li><span class="help-step-num">${s.icon}</span><span>${s.mr}<br><small style="color:#666;font-weight:700;">${s.en}</small></span></li>`).join('');
+    }
+
+    function showHelpGuide(isQuotation) {
+      const steps = isQuotation ? QUOTATION_STEPS : BILL_STEPS;
+      const tip = isQuotation ? QUOTATION_TIP : BILL_TIP;
+      const title = isQuotation ? "ℹ️ कोटेशन कसे वापरावे? (How to use)" : "ℹ️ बिल कसे वाचावे? (How to read)";
+
+      // Modal content only — banner is removed, help only opens on ❓ click
+      // (keep modal subtitle/steps/tip)
+      document.getElementById('help-modal-subtitle').textContent = isQuotation
+        ? "खालील पायऱ्या फॉलो करा (Follow these steps):"
+        : "खालील माहिती वाचा (Read the information below):";
+      document.getElementById('help-modal-steps').innerHTML = buildStepsHTML(steps);
+      document.getElementById('help-tip-box').textContent = tip;
+    }
+
+    window.dismissHelp = function () {
+      document.getElementById('help-banner').style.display = 'none';
+    };
+
+    window.openHelpModal = function () {
+      document.getElementById('help-modal-overlay').style.display = 'flex';
+    };
+
+    window.closeHelpModal = function () {
+      document.getElementById('help-modal-overlay').style.display = 'none';
+    };
+
+    window.closeHelpModalOutside = function (e) {
+      if (e.target === document.getElementById('help-modal-overlay')) closeHelpModal();
+    };
+
+    // ===== END HELP GUIDE SYSTEM =====
+
+
+    // ===== WORKFLOW-BASED SECTION ORDERING =====
+    function reorderSections(isQuotation) {
+      const box = document.querySelector('.invoice-box');
+      if (!box) return;
+
+      const actionGroup  = document.getElementById('call-shop-btn')?.parentElement;
+      const catalogue    = document.getElementById('catalogue-section');
+      const formWrapper  = document.getElementById('customer-form-wrapper');
+      const mapBox       = document.querySelector('.map-box');
+      const footer       = document.querySelector('.footer');
+      const printBtn     = document.querySelector('.btn-print');
+      const saveStatus   = document.getElementById('save-status-msg');
+
+      if (isQuotation) {
+        // QUOTATION ORDER:
+        // header → bill title → customer details → items table → [catalogue] → [form+save] → call → map → footer → print
+        if (catalogue)   box.appendChild(catalogue);
+        if (formWrapper) box.appendChild(formWrapper);
+        if (actionGroup) box.appendChild(actionGroup);
+        if (mapBox)      box.appendChild(mapBox);
+        if (footer)      box.appendChild(footer);
+        if (printBtn)    box.appendChild(printBtn);
+        if (saveStatus)  box.appendChild(saveStatus);
+
+        // Add step labels to key sections
+        const callBtn = document.getElementById('call-shop-btn');
+        if (callBtn && !callBtn.dataset.relabelled) {
+          callBtn.dataset.relabelled = '1';
+        }
+      } else {
+        // BILL ORDER:
+        // header → bill title → customer details → items table → summary → call → map → footer → print
+        if (actionGroup) box.appendChild(actionGroup);
+        if (mapBox)      box.appendChild(mapBox);
+        if (footer)      box.appendChild(footer);
+        if (printBtn)    box.appendChild(printBtn);
+        if (saveStatus)  box.appendChild(saveStatus);
+      }
+    }
+    // ===== END SECTION ORDERING =====
+
+    window.onload = () => {
+      fetchBillData();
+      setupTranslationFields();
+    };
+
+  </script>
+
+  <!-- ===== FLOATING HELP BUTTON ===== -->
+  <button class="help-fab" onclick="openHelpModal()" title="हे पान कसे वापरावे?">❓ मदत</button>
+
+  <!-- ===== HELP MODAL ===== -->
+  <div id="help-modal-overlay" class="help-modal-overlay" style="display:none;" onclick="closeHelpModalOutside(event)">
+    <div class="help-modal">
+      <button class="help-modal-close" onclick="closeHelpModal()">✖</button>
+      <h2>❓ हे पान कसे वापरावे?</h2>
+      <p class="help-subtitle" id="help-modal-subtitle"></p>
+      <ol class="help-steps" id="help-modal-steps"></ol>
+      <div class="help-tip-box" id="help-tip-box"></div>
+    </div>
+  </div>
+
+</body>
+
+</html>

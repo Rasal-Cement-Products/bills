@@ -1704,6 +1704,8 @@
       transition: opacity 0.18s, transform 0.1s;
       width: 100%;
       box-sizing: border-box;
+      font-family: inherit;
+      text-align: left;
     }
 
     .upi-app-btn:active { opacity: 0.8; transform: scale(0.98); }
@@ -1724,7 +1726,35 @@
     .upi-btn-gpay .upi-btn-icon { background: #f1f3f4; }
     .upi-btn-phonepe { background: #5f259f; color: #fff; }
     .upi-btn-paytm   { background: #00baf2; color: #fff; }
+    .upi-btn-bhim    { background: #00529b; color: #fff; }
+    .upi-btn-amazonpay { background: #ff9900; color: #111; }
     .upi-btn-generic { background: #1a7a3a; color: #fff; }
+
+    .upi-more-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 18px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 900;
+      background: #f1f3f4;
+      color: #333;
+      border: 2px dashed #bbb;
+      cursor: pointer;
+      box-sizing: border-box;
+      font-family: inherit;
+      margin-top: 4px;
+    }
+    .upi-more-apps {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 0;
+    }
+    .upi-more-apps.open { display: flex; }
 
     .upi-btn-text-wrap { display: flex; flex-direction: column; }
     .upi-btn-main { font-size: 17px; font-weight: 900; line-height: 1.2; }
@@ -2187,49 +2217,41 @@
             <div class="upi-app-buttons">
 
               <!-- GPay -->
-              <a id="upi-btn-gpay" class="upi-app-btn upi-btn-gpay" target="_blank">
+              <button class="upi-app-btn upi-btn-gpay" onclick="openUpiApp('gpay')">
                 <div class="upi-btn-icon">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" height="26" alt="GPay">
                 </div>
                 <div class="upi-btn-text-wrap">
                   <span class="upi-btn-main">Google Pay</span>
-                  <span class="upi-btn-sub">GPay वापरून पेमेंट करा</span>
+                  <span class="upi-btn-sub">GPay वापरून पेमेंट करा • रक्कम आपोआप भरेल</span>
                 </div>
                 <span class="upi-btn-arrow">›</span>
-              </a>
+              </button>
 
               <!-- PhonePe -->
-              <a id="upi-btn-phonepe" class="upi-app-btn upi-btn-phonepe" target="_blank">
+              <button class="upi-app-btn upi-btn-phonepe" onclick="openUpiApp('phonepe')">
                 <div class="upi-btn-icon">
-                  <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/PhonePe_Logo.svg/120px-PhonePe_Logo.svg.png" height="26" alt="PhonePe"> -->
                   <img src="https://e7.pngegg.com/pngimages/332/615/png-clipart-phonepe-india-unified-payments-interface-india-purple-violet.png" height="26" alt="PhonePe">
                 </div>
                 <div class="upi-btn-text-wrap">
                   <span class="upi-btn-main">PhonePe</span>
-                  <span class="upi-btn-sub">PhonePe वापरून पेमेंट करा</span>
+                  <span class="upi-btn-sub">PhonePe वापरून पेमेंट करा • रक्कम आपोआप भरेल</span>
                 </div>
                 <span class="upi-btn-arrow">›</span>
-              </a>
+              </button>
 
               <!-- Paytm -->
-              <a id="upi-btn-paytm" class="upi-app-btn upi-btn-paytm" target="_blank">
-                <div class="upi-btn-icon"></div>
+              <button class="upi-app-btn upi-btn-paytm" onclick="openUpiApp('paytm')">
+                <div class="upi-btn-icon">
+                  <img src="https://play-lh.googleusercontent.com/WDGsMRuVENnZPEpV4DEaXw12qtMY3em85xpmZqcXzeh0iT_eXFtAU9VUj-Z7xNQQd5DMqrkKSs9D0qbI1rlt" alt="Paytm" height="30">
+                </div>
                 <div class="upi-btn-text-wrap">
                   <span class="upi-btn-main">Paytm</span>
-                  <span class="upi-btn-sub">Paytm वापरून पेमेंट करा</span>
+                  <span class="upi-btn-sub">Paytm वापरून पेमेंट करा • रक्कम आपोआप भरेल</span>
                 </div>
                 <span class="upi-btn-arrow">›</span>
-              </a>
+              </button>
 
-              <!-- Generic / Other -->
-              <a id="upi-btn-generic" class="upi-app-btn upi-btn-generic" target="_blank">
-                <div class="upi-btn-icon">📲</div>
-                <div class="upi-btn-text-wrap">
-                  <span class="upi-btn-main">इतर कोणत्याही ॲपने</span>
-                  <span class="upi-btn-sub">BHIM, Amazon Pay किंवा इतर UPI ॲप</span>
-                </div>
-                <span class="upi-btn-arrow">›</span>
-              </a>
 
             </div>
           </div>
@@ -2257,11 +2279,11 @@
 
           <!-- ── After payment reminder ── -->
           <div class="upi-after-pay">
-            <span class="upi-after-pay-icon">📸</span>
+            <span class="upi-after-pay-icon">📞</span>
             <div class="upi-after-pay-text">
-              पेमेंट झाल्यावर स्क्रीनशॉट घ्या<br>आणि दुकानाला WhatsApp वर पाठवा
+              पेमेंट झाल्यावर दुकानाला फोन करून पेमेंट कन्फर्म करा
             </div>
-            <span class="upi-after-pay-sub">(After payment, send screenshot to shop on WhatsApp)</span>
+            <span class="upi-after-pay-sub">(Call to shop to confirm payment)</span>
           </div>
 
         </div>
@@ -3148,8 +3170,8 @@
           <span>एकूण रक्कम:</span>
           <span>₹${grandTotalAmount.toLocaleString('en-IN')}/-</span>
         </div>
-        <div class="totals-row" style="font-style: italic; color: #666;">
-          <span><strong>अक्षरी:</strong> ${numberToWordMarathi(Math.floor(grandTotalAmount))} रुपये फक्त</span>
+        <div class="totals-row" style="font-style: italic; color: #666; font-size: 26px;">
+          <span>${numberToWordMarathi(Math.floor(grandTotalAmount))} रुपये फक्त</span>
         </div>`;
 
       if (!isQuotation) {
@@ -3314,42 +3336,57 @@
 
 
     // ===== UPI PAYMENT SECTION =====
-    const UPI_VPA  = '9356652711@ibl';   // ← REPLACE with real UPI ID
+    const UPI_VPA  = '9356652711@ibl';
     const UPI_NAME = 'Rasal';
 
+    // Builds official deep-link URLs for each UPI app.
+    // Each app has its own registered URI scheme; payment params are passed as query params.
+    // Fallback for unrecognised apps uses the standard upi:// scheme (works as an app chooser on Android).
     function buildUpiUrl(app, amount, billId) {
-      const pa  = encodeURIComponent(UPI_VPA);
-      const pn  = encodeURIComponent(UPI_NAME);
-      const am  = Number(amount).toFixed(2);
-      const tr  = encodeURIComponent('BILL-' + (billId || 'REF'));
-      const tn  = encodeURIComponent('Payment for Bill ' + (billId || ''));
-      const cu  = 'INR';
-      const params = `pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
+      const pa = encodeURIComponent(UPI_VPA);
+      const pn = encodeURIComponent(UPI_NAME);
+      const am = Number(amount).toFixed(2);
+      const tr = encodeURIComponent('BILL-' + (billId || 'REF'));
+      const tn = encodeURIComponent('Payment for Bill ' + (billId || ''));
+      const params = `pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=INR`;
 
-      // WHY intent:// FORMAT?
-      // Chrome on Android does NOT support plain custom URI schemes (upi://, gpay://, etc.)
-      // Chrome requires the Android Intent syntax: intent://HOST?PARAMS#Intent;scheme=SCHEME;package=PKG;end
-      // This works across Chrome AND all other browsers on Android.
-      // Omitting package= on the generic button lets Android show a chooser of ALL installed UPI apps.
+      // Official deep-link schemes registered by each app:
+      // GPay    → tez://upi/pay  (Google Pay's registered scheme on Android & iOS)
+      // PhonePe → phonepe://pay  (PhonePe's official scheme)
+      // Paytm   → paytmmp://pay  (Paytm Money/UPI official scheme)
+      // BHIM    → upi://pay      (NPCI's standard UPI scheme — opens BHIM directly if installed)
+      // AmazonPay → amzn://apps/android (Amazon Pay uses standard upi:// for payment)
+      const schemes = {
+        gpay:      'tez://upi/pay',
+        phonepe:   'phonepe://pay',
+        paytm:     'paytmmp://pay',
+        bhim:      'upi://pay',
+        amazonpay: 'upi://pay',  // Amazon Pay handles standard upi:// links natively
+      };
 
-      const fallbackPlay = 'https://play.google.com/store/apps/details?id=';
-
-      if (app === 'gpay') {
-        const pkg = 'com.google.android.apps.nbu.paisa.user';
-        return `intent://upi/pay?${params}#Intent;scheme=gpay;package=${pkg};S.browser_fallback_url=${encodeURIComponent(fallbackPlay + pkg)};end`;
+      const scheme = schemes[app];
+      if (scheme) {
+        return `${scheme}?${params}`;
       }
-      if (app === 'phonepe') {
-        const pkg = 'com.phonepe.app';
-        return `intent://upi/pay?${params}#Intent;scheme=phonepe;package=${pkg};S.browser_fallback_url=${encodeURIComponent(fallbackPlay + pkg)};end`;
-      }
-      if (app === 'paytm') {
-        const pkg = 'net.one97.paytm';
-        return `intent://upi/pay?${params}#Intent;scheme=paytmmp;package=${pkg};S.browser_fallback_url=${encodeURIComponent(fallbackPlay + pkg)};end`;
-      }
-      // GENERIC — no package= → Android shows a chooser of ALL installed UPI apps
-      // This is the fix for the "इतर UPI ॲपने पेमेंट करा" button not working in Chrome
-      return `intent://upi/pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${encodeURIComponent('https://www.bhimupi.org.in/')};end`;
+      // generic — standard upi:// lets Android show the system app-chooser for all installed UPI apps
+      return `upi://pay?${params}`;
     }
+
+    // Called by each UPI button click.
+    // Uses window.location.href so the deep-link fires even inside Android WebView / Chrome.
+    window.openUpiApp = function(app) {
+      const url = buildUpiUrl(app, window._upiBalance, window._upiBillId);
+      window.location.href = url;
+    };
+
+    window.toggleMoreUpiApps = function() {
+      const panel = document.getElementById('upi-more-apps-panel');
+      const label = document.getElementById('upi-more-btn-label');
+      const isOpen = panel.classList.toggle('open');
+      label.textContent = isOpen
+        ? '➖ कमी ॲप दाखवा (Less Apps)'
+        : '➕ आणखी ॲप पहा (More Apps)';
+    };
 
     function renderUpiSection(balance, billId) {
       const section = document.getElementById('upi-payment-section');
@@ -3360,32 +3397,24 @@
         return;
       }
 
+      // Store for use in openUpiApp()
+      window._upiBalance = balance;
+      window._upiBillId  = billId;
+
       section.style.display = 'block';
 
-      // Amount display
       document.getElementById('upi-amount-display').textContent =
         '₹' + Number(balance).toLocaleString('en-IN') + '/-';
       document.getElementById('upi-bill-ref').textContent =
         'बिल क्र. (Bill No.): ' + (billId || '-');
-
-      // UPI ID display
       document.getElementById('upi-id-display').textContent = UPI_VPA;
 
-      // Build URLs
-      const genericUrl = buildUpiUrl('generic', balance, billId);
-      document.getElementById('upi-btn-gpay').href    = buildUpiUrl('gpay', balance, billId);
-      document.getElementById('upi-btn-phonepe').href = buildUpiUrl('phonepe', balance, billId);
-      document.getElementById('upi-btn-paytm').href   = buildUpiUrl('paytm', balance, billId);
-      document.getElementById('upi-btn-generic').href = genericUrl;
-
-      // QR Code — use plain upi:// scheme (NOT intent://)
-      // QR is scanned by camera inside a UPI app — Chrome is not involved.
-      // Plain upi://pay? is the correct NPCI-specified format for QR codes.
-      const pa2  = encodeURIComponent(UPI_VPA);
-      const pn2  = encodeURIComponent(UPI_NAME);
-      const am2  = Number(balance).toFixed(2);
-      const tr2  = encodeURIComponent('BILL-' + (billId || 'REF'));
-      const tn2  = encodeURIComponent('Payment for Bill ' + (billId || ''));
+      // QR Code uses plain upi:// (scanned inside app, not via Chrome)
+      const pa2 = encodeURIComponent(UPI_VPA);
+      const pn2 = encodeURIComponent(UPI_NAME);
+      const am2 = Number(balance).toFixed(2);
+      const tr2 = encodeURIComponent('BILL-' + (billId || 'REF'));
+      const tn2 = encodeURIComponent('Payment for Bill ' + (billId || ''));
       const qrUrl = `upi://pay?pa=${pa2}&pn=${pn2}&am=${am2}&tr=${tr2}&tn=${tn2}&cu=INR`;
 
       const qrContainer = document.getElementById('upi-qr-canvas');
@@ -3534,3 +3563,5 @@
 </body>
 
 </html>
+
+

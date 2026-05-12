@@ -2575,30 +2575,127 @@
       }
     }
 
-    window.getCustomerLocation = function () {
-      const status = document.getElementById('location-status');
+    // ── Accuracy thresholds ──────────────────────────────────────────────
+    // Good  : ≤ 50 m  → accept immediately
+    // Fair  : ≤ 200 m → accept with warning after one retry
+    // Poor  : > 200 m → warn user; ask to enable GPS / move outdoors
+    const GPS_GOOD_M  = 50;
+    const GPS_FAIR_M  = 200;
+    const GPS_TIMEOUT = 15000; // ms per attempt
+
+    window.getCustomerLocation = async function () {
+      const status   = document.getElementById('location-status');
+      const btn      = document.getElementById('btn-get-location');
+
+      // ── 1. Browser support check ────────────────────────────────────────
       if (!navigator.geolocation) {
-        status.textContent = '❌ तुमच्या ब्राउझरमध्ये GPS उपलब्ध नाही.';
+        status.innerHTML = '❌ तुमच्या ब्राउझरमध्ये GPS उपलब्ध नाही. (GPS not supported in this browser)';
         return;
       }
-      status.textContent = '⏳ लोकेशन शोधत आहे...';
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const lat = pos.coords.latitude.toFixed(6);
-          const lng = pos.coords.longitude.toFixed(6);
-          document.getElementById('cf-lat').value = lat;
-          document.getElementById('cf-lng').value = lng;
-          const mapDiv = document.getElementById('cf-map-preview');
-          const mapIframe = document.getElementById('cf-map-iframe');
-          mapIframe.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
-          mapDiv.style.display = 'block';
-          status.textContent = '⏳ पत्ता शोधत आहे...';
-          await reverseGeocodeAndFill(lat, lng);
-        },
-        (err) => {
-          status.textContent = '❌ लोकेशन मिळाले नाही. कृपया परवानगी द्या.';
+
+      btn.style.opacity = '0.6';
+      btn.style.pointerEvents = 'none';
+
+      // ── 2. Helper: single geolocation attempt (returns a Promise) ────────
+      function tryGetPosition(enableHighAccuracy, timeout) {
+        return new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: enableHighAccuracy,
+            timeout: timeout,
+            maximumAge: 0          // never use a cached position
+          });
+        });
+      }
+
+      // ── 3. Helper: apply a successful position to the UI ─────────────────
+      async function applyPosition(pos, accuracyWarning) {
+        const lat      = pos.coords.latitude.toFixed(6);
+        const lng      = pos.coords.longitude.toFixed(6);
+        const accuracy = Math.round(pos.coords.accuracy);
+
+        document.getElementById('cf-lat').value = lat;
+        document.getElementById('cf-lng').value = lng;
+
+        const mapDiv   = document.getElementById('cf-map-preview');
+        const mapIframe = document.getElementById('cf-map-iframe');
+        mapIframe.src  = `https://maps.google.com/maps?q=${lat},${lng}&z=17&output=embed`;
+        mapDiv.style.display = 'block';
+
+        if (accuracyWarning) {
+          status.innerHTML = `⚠️ लोकेशन मिळाले, परंतु अचूकता कमी आहे (~${accuracy} मीटर). GPS चालू आहे का? बाहेर जाऊन पुन्हा प्रयत्न करा.<br>
+            <small style="color:#e67e00;">(Location found but accuracy is low ~${accuracy} m. Enable GPS & try outdoors.)</small><br>
+            <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:#0056b3;">नकाशावर पहा</a>`;
+        } else {
+          status.innerHTML = `✅ लोकेशन अचूक मिळाले! (~${accuracy} मीटर) &nbsp;
+            <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:#0056b3;">नकाशावर पहा</a>`;
         }
-      );
+
+        // Reverse-geocode in background
+        status.innerHTML += ' &nbsp;<span id="geocode-badge">⏳ पत्ता भरत आहे...</span>';
+        await reverseGeocodeAndFill(lat, lng);
+        const badge = document.getElementById('geocode-badge');
+        if (badge) badge.remove();
+      }
+
+      // ── 4. Main flow ──────────────────────────────────────────────────────
+      try {
+        // Attempt 1: high-accuracy GPS (15 s)
+        status.innerHTML = '⏳ GPS सिग्नल शोधत आहे… (Fetching high-accuracy GPS…)';
+        let pos;
+        try {
+          pos = await tryGetPosition(true, GPS_TIMEOUT);
+        } catch (e1) {
+          // GPS timed-out or denied; fall back to network/IP location
+          if (e1.code === e1.PERMISSION_DENIED) {
+            status.innerHTML = '❌ लोकेशन परवानगी नाकारली. कृपया सेटिंग्जमध्ये लोकेशन परवानगी द्या.<br>'
+              + '<small style="color:#c00;">(Location permission denied. Please allow location in browser settings.)</small>';
+            return;
+          }
+          status.innerHTML = '⏳ GPS सिग्नल मिळाला नाही, नेटवर्क लोकेशन वापरत आहे…<br>'
+            + '<small style="color:#888;">(GPS timed out – trying network location…)</small>';
+          pos = await tryGetPosition(false, GPS_TIMEOUT); // network/IP fallback
+        }
+
+        const accuracy = pos.coords.accuracy;
+
+        if (accuracy <= GPS_GOOD_M) {
+          // ✅ Great accuracy — accept immediately
+          await applyPosition(pos, false);
+
+        } else if (accuracy <= GPS_FAIR_M) {
+          // 🟡 Fair accuracy — try once more for a better fix
+          status.innerHTML = `⏳ अचूकता कमी आहे (~${Math.round(accuracy)} मीटर). अजून चांगला सिग्नल शोधत आहे…<br>`
+            + '<small style="color:#e67e00;">(Accuracy low – trying for a better fix…)</small>';
+          let pos2;
+          try {
+            pos2 = await tryGetPosition(true, GPS_TIMEOUT);
+          } catch (_) {
+            pos2 = pos; // keep first result if retry fails
+          }
+          await applyPosition(pos2, pos2.coords.accuracy > GPS_FAIR_M);
+
+        } else {
+          // 🔴 Poor accuracy > 200 m — warn user clearly
+          status.innerHTML = `⚠️ लोकेशन मिळाले, पण अचूकता खूप कमी आहे (~${Math.round(accuracy)} मीटर).<br>`
+            + '📡 कृपया: <strong>GPS चालू करा</strong> आणि बाहेर उघड्या आकाशाखाली जाऊन पुन्हा बटण दाबा.<br>'
+            + '<small style="color:#c00;">(Location inaccurate – enable GPS, go outdoors and try again.)</small>';
+          // Still save the best we have so the user can correct manually
+          document.getElementById('cf-lat').value = pos.coords.latitude.toFixed(6);
+          document.getElementById('cf-lng').value = pos.coords.longitude.toFixed(6);
+        }
+
+      } catch (err) {
+        // Final fallback error handler
+        const msgs = {
+          1: '❌ लोकेशन परवानगी नाकारली. सेटिंग्जमध्ये परवानगी द्या. (Permission denied – allow location in settings)',
+          2: '❌ GPS / नेटवर्क उपलब्ध नाही. इंटरनेट आणि GPS तपासा. (Position unavailable – check GPS & internet)',
+          3: '❌ वेळ संपली. GPS चालू करा आणि पुन्हा प्रयत्न करा. (Timed out – enable GPS and retry)'
+        };
+        status.innerHTML = msgs[err.code] || '❌ अज्ञात त्रुटी. पुन्हा प्रयत्न करा. (Unknown error – please retry)';
+      } finally {
+        btn.style.opacity   = '';
+        btn.style.pointerEvents = '';
+      }
     }
 
     // ===== English → Marathi translation

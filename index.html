@@ -8,11 +8,11 @@
   <meta id="viewport-meta" name="viewport" content="width=1020, user-scalable=yes">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@500;700;900&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi:wght@400;700&display=swap"
     rel="stylesheet">
   <style>
     body {
-      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', 'Tiro Devanagari Marathi', sans-serif;
       background-color: #f4f7f6;
       margin: 0;
       padding: 0;
@@ -567,7 +567,7 @@
       border: 2px solid #ccc;
       border-radius: 8px;
       box-sizing: border-box;
-      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', 'Tiro Devanagari Marathi', sans-serif;
     }
 
     .form-group input:focus,
@@ -622,7 +622,7 @@
       font-weight: 900;
       cursor: pointer;
       margin-top: 10px;
-      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', 'Tiro Devanagari Marathi', sans-serif;
       transition: 0.2s;
     }
 
@@ -1341,7 +1341,7 @@
       border: 2px solid #218838;
       box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
       transition: 0.2s;
-      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', 'Tiro Devanagari Marathi', sans-serif;
     }
 
     .btn-save-all:hover {
@@ -2134,16 +2134,17 @@
             </div>
           </div>
           <div class="form-group">
-            <label>🏠 पत्ता (Address in words)</label>
-            <textarea id="cf-address"
-              placeholder="उदा. घर नं. ५, मुख्य रस्ता, कोल्हार, ता. राहाता, जि. अहमदनगर"></textarea>
-          </div>
-          <div class="form-group">
-            <label>📍 तुमचे घराचे लोकेशन शेअर करा (डिलिव्हरीसाठी उपयुक्त)</label>
+            <label>📍वस्तू ज्या ठिकाणी पोहोचवायच्या आहेत, कृपया तिथले लोकेशन शेअर करा.</label>
             <br>
             <a class="btn-map-locate" id="btn-get-location" onclick="getCustomerLocation()">
               📍 माझे लोकेशन आपोआप भरा
             </a>
+          </div>
+          <div class="form-group">
+            <label>🏠 पत्ता (Address in words)</label>
+            <textarea id="cf-address"
+              placeholder="उदा. घर नं. ५, मुख्य रस्ता, कोल्हार, ता. राहाता, जि. अहमदनगर"></textarea>
+          </div>
             <span id="location-status"
               style="display:inline-block;margin-left:10px;font-size:14px;font-weight:700;color:#555;"></span>
             <input type="hidden" id="cf-lat" />
@@ -2675,13 +2676,11 @@
           await applyPosition(pos2, pos2.coords.accuracy > GPS_FAIR_M);
 
         } else {
-          // 🔴 Poor accuracy > 200 m — warn user clearly
+          // 🔴 Poor accuracy > 200 m — still fill address & show map with warning
+          await applyPosition(pos, true);
           status.innerHTML = `⚠️ लोकेशन मिळाले, पण अचूकता खूप कमी आहे (~${Math.round(accuracy)} मीटर).<br>`
             + '📡 कृपया: <strong>GPS चालू करा</strong> आणि बाहेर उघड्या आकाशाखाली जाऊन पुन्हा बटण दाबा.<br>'
             + '<small style="color:#c00;">(Location inaccurate – enable GPS, go outdoors and try again.)</small>';
-          // Still save the best we have so the user can correct manually
-          document.getElementById('cf-lat').value = pos.coords.latitude.toFixed(6);
-          document.getElementById('cf-lng').value = pos.coords.longitude.toFixed(6);
         }
 
       } catch (err) {

@@ -1834,6 +1834,8 @@
         if (n < 100) return marathiWords[n];
         let h = Math.floor(n / 100);
         let r = n % 100;
+        // Use शंभर when the number is exactly 100 (h=1, r=0)
+        if (h === 1 && r === 0) return 'शंभर';
         return hundreds[h] + (r !== 0 ? ' ' + marathiWords[r] : '');
       }
 
@@ -2962,12 +2964,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-

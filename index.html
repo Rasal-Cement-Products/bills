@@ -5,7 +5,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta id="viewport-meta" name="viewport" content="width=1020, user-scalable=yes">
+  <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi:wght@400;700&display=swap"
     rel="stylesheet">
@@ -16,13 +16,13 @@
       margin: 0;
       padding: 0;
       color: #000;
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 700;
     }
 
     /* --- Card Layout Styles (Mobile Override) --- */
     body.card-layout {
-      font-size: 16px;
+      font-size: 14px;
     }
 
     body.card-layout #desktop-wrapper {
@@ -153,7 +153,7 @@
       padding: 8px 0;
       border: none;
       border-bottom: 1px dashed #eee;
-      font-size: 16px;
+      font-size: 14px;
       color: #000;
       font-weight: 900;
     }
@@ -510,11 +510,13 @@
 
     .form-row {
       display: flex;
-      gap: 15px;
+      flex-direction: column;
+      gap: 0px;
     }
 
     .form-row .form-group {
-      flex: 1;
+      flex: unset;
+      width: 100%;
     }
 
     .btn-map-locate {
@@ -629,11 +631,18 @@
     }
 
     #desktop-wrapper {
-      width: 1000px;
-      transform-origin: top left;
+      width: 100%;
+      max-width: 1000px;
       padding: 15px;
       box-sizing: border-box;
       margin: 0 auto;
+      overflow-x: hidden;
+    }
+
+    @media (max-width: 1000px) {
+      body:not(.card-layout) .invoice-box {
+        zoom: calc(100vw / 1020);
+      }
     }
 
     .invoice-box {
@@ -1224,7 +1233,7 @@
       }
 
       .header h1 {
-        font-size: 26px;
+        font-size: 32px;
       }
 
       .header p,
@@ -1237,25 +1246,25 @@
       .note-box p,
       .trips-section-title,
       .totals-row {
-        font-size: 13px !important;
+        font-size: 18px !important;
       }
 
       .details-left h3 {
-        font-size: 15px;
+        font-size: 20px;
       }
 
       .grand-total {
-        font-size: 16px;
-        padding: 7px 12px;
+        font-size: 22px;
+        padding: 10px 15px;
         background: #e9ecef !important;
       }
 
       .balance-due {
-        font-size: 17px;
+        font-size: 24px;
       }
 
       .balance-clear {
-        font-size: 15px;
+        font-size: 20px;
       }
 
       a.phone-link {
@@ -1651,9 +1660,11 @@
         <h1 style="font-family: Arial, Helvetica, sans-serif; font-weight: bold;" >रसाळ सिमेंट प्रॉडक्ट्स</h1>
         <p><span class="header-address">लोणी रोड, कोल्हार-भगवतीपूर, ता. राहाता</span>
           <span class="header-phones">
-            <a href="tel:+918805579296" class="phone-link">+91 8805579296</a>
-            <span class="header-phone-sep"> | </span>
             <a href="tel:+919623266922" class="phone-link">+91 9623266922</a>
+            
+            <span class="header-phone-sep"> | </span>
+            <a href="tel:+918805579296" class="phone-link">+91 8805579296</a>
+            
           </span>
         </p>
       </div>
@@ -1719,8 +1730,8 @@
           <h3 style="margin-top:5px;">📞 कोणाला कॉल करावे?</h3>
           <p class="call-note">टीप: ज्यांनी तुम्हाला हे कोटेशन किंवा बिल पाठवले आहे, कृपया त्यांनाच कॉल करा.
             <br><small>(Call the number who sent this to you)</small></p>
+            <a href="tel:+919623266922" class="call-option-btn">काकासाहेब रसाळ<br>📱 9623266922</a>
           <a href="tel:+918805579296" class="call-option-btn">संतोष रसाळ<br>📱 8805579296</a>
-          <a href="tel:+919623266922" class="call-option-btn">काकासाहेब रसाळ<br>📱 9623266922</a>
         </div>
       </div>
       </div>
@@ -1892,13 +1903,10 @@
 
     function toggleLayout() {
       const isMobile = document.getElementById('layoutToggle').checked;
-      const meta = document.getElementById('viewport-meta');
       if (isMobile) {
         document.body.classList.add('card-layout');
-        meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
       } else {
         document.body.classList.remove('card-layout');
-        meta.setAttribute('content', 'width=1020, user-scalable=yes');
       }
       // Sync FAB button appearance
       const fab = document.getElementById('mobileViewFab');
@@ -2317,14 +2325,12 @@
       wasCardLayout = document.body.classList.contains('card-layout');
       if (wasCardLayout) {
         document.body.classList.remove('card-layout');
-        document.getElementById('viewport-meta').setAttribute('content', 'width=1020, user-scalable=yes');
       }
     });
 
     window.addEventListener('afterprint', () => {
       if (wasCardLayout) {
         document.body.classList.add('card-layout');
-        document.getElementById('viewport-meta').setAttribute('content', 'width=device-width, initial-scale=1.0');
       }
     });
 
@@ -2454,9 +2460,9 @@
         if (typeof currentBillData.installments === 'string') { try { currentBillData.installments = JSON.parse(currentBillData.installments); } catch (e) { currentBillData.installments = []; } }
 
         if (currentBillData.docType === "Quotation") {
-          document.getElementById('layoutToggle').checked = true;
+          document.getElementById('layoutToggle').checked = false;
         } else {
-          document.getElementById('layoutToggle').checked = true; // Mobile is default for bills too
+          document.getElementById('layoutToggle').checked = false; // Desktop is default for bills too
         }
         toggleLayout();
 

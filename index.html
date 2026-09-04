@@ -1,4 +1,4 @@
-
+ 
 
 <!DOCTYPE html>
 <html lang="mr">
@@ -640,9 +640,7 @@
     }
 
     @media (max-width: 1000px) {
-      body:not(.card-layout) .invoice-box {
-        zoom: calc(100vw / 1020);
-      }
+      /* Handled via viewport meta tag for desktop layout on mobile */
     }
 
     .invoice-box {
@@ -1903,10 +1901,19 @@
 
     function toggleLayout() {
       const isMobile = document.getElementById('layoutToggle').checked;
+      const viewportMeta = document.getElementById('viewport-meta');
       if (isMobile) {
         document.body.classList.add('card-layout');
+        if (viewportMeta) viewportMeta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0";
       } else {
         document.body.classList.remove('card-layout');
+        if (viewportMeta) {
+          if (window.innerWidth <= 1020) {
+            viewportMeta.content = "width=1024";
+          } else {
+            viewportMeta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0";
+          }
+        }
       }
       // Sync FAB button appearance
       const fab = document.getElementById('mobileViewFab');
@@ -2459,10 +2466,11 @@
         if (typeof currentBillData.trips === 'string') { try { currentBillData.trips = JSON.parse(currentBillData.trips); } catch (e) { currentBillData.trips = []; } }
         if (typeof currentBillData.installments === 'string') { try { currentBillData.installments = JSON.parse(currentBillData.installments); } catch (e) { currentBillData.installments = []; } }
 
+        const isSmallScreen = window.innerWidth <= 768;
         if (currentBillData.docType === "Quotation") {
-          document.getElementById('layoutToggle').checked = false;
+          document.getElementById('layoutToggle').checked = isSmallScreen;
         } else {
-          document.getElementById('layoutToggle').checked = false; // Desktop is default for bills too
+          document.getElementById('layoutToggle').checked = isSmallScreen; // Mobile layout default on small screens
         }
         toggleLayout();
 

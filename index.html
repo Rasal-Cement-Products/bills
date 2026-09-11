@@ -1,4 +1,4 @@
- 
+
 
 <!DOCTYPE html>
 <html lang="mr">
@@ -2466,11 +2466,12 @@
         if (typeof currentBillData.trips === 'string') { try { currentBillData.trips = JSON.parse(currentBillData.trips); } catch (e) { currentBillData.trips = []; } }
         if (typeof currentBillData.installments === 'string') { try { currentBillData.installments = JSON.parse(currentBillData.installments); } catch (e) { currentBillData.installments = []; } }
 
-        const isSmallScreen = window.innerWidth <= 768;
-        if (currentBillData.docType === "Quotation") {
-          document.getElementById('layoutToggle').checked = isSmallScreen;
-        } else {
-          document.getElementById('layoutToggle').checked = isSmallScreen; // Mobile layout default on small screens
+        // Always default to desktop/invoice view on all devices (mobile + desktop)
+        document.getElementById('layoutToggle').checked = false;
+        // On small screens, use width=1024 viewport so the full invoice is visible (horizontally scrollable)
+        const viewportMeta = document.getElementById('viewport-meta');
+        if (viewportMeta && window.innerWidth <= 1020) {
+          viewportMeta.content = "width=1024";
         }
         toggleLayout();
 

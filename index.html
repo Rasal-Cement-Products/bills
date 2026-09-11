@@ -636,11 +636,28 @@
       padding: 15px;
       box-sizing: border-box;
       margin: 0 auto;
-      overflow-x: hidden;
+      overflow-x: auto;
     }
 
-    @media (max-width: 1000px) {
-      /* Handled via viewport meta tag for desktop layout on mobile */
+    /* Allow full-page horizontal scroll on mobile so entire invoice is accessible */
+    html, body {
+      overflow-x: auto;
+    }
+
+    /* Mobile: scale the invoice to fit the screen — shows complete invoice without horizontal scroll */
+    @media (max-width: 1020px) {
+      body:not(.card-layout) #desktop-wrapper {
+        width: 100vw;
+        max-width: 100vw;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      body:not(.card-layout) .invoice-box {
+        transform-origin: top left;
+        /* Scale is set dynamically by JS; fallback below */
+        width: 970px;
+      }
     }
 
     .invoice-box {
@@ -1899,21 +1916,48 @@
       return parts.join(' ').trim();
     }
 
+    // Scale invoice to fit mobile screen width (desktop/invoice view only)
+    function scaleInvoiceForMobile() {
+      const invoiceBox = document.querySelector('.invoice-box');
+      if (!invoiceBox) return;
+      const isMobileView = !document.body.classList.contains('card-layout');
+      if (isMobileView && window.innerWidth <= 1020) {
+        const screenW = window.innerWidth;
+        const invoiceW = 970; // fixed invoice width in px
+        const scale = Math.min(1, (screenW - 10) / invoiceW);
+        invoiceBox.style.transform = `scale(${scale})`;
+        invoiceBox.style.marginBottom = `-${invoiceW * (1 - scale)}px`;
+        // Adjust wrapper height so page doesn't have huge blank space
+        const wrapper = document.getElementById('desktop-wrapper');
+        if (wrapper) wrapper.style.height = (invoiceBox.offsetHeight * scale + 20) + 'px';
+      } else {
+        invoiceBox.style.transform = '';
+        invoiceBox.style.marginBottom = '';
+        const wrapper = document.getElementById('desktop-wrapper');
+        if (wrapper) wrapper.style.height = '';
+      }
+    }
+
+    window.addEventListener('resize', scaleInvoiceForMobile);
+
     function toggleLayout() {
       const isMobile = document.getElementById('layoutToggle').checked;
       const viewportMeta = document.getElementById('viewport-meta');
       if (isMobile) {
         document.body.classList.add('card-layout');
         if (viewportMeta) viewportMeta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0";
+        // Reset invoice scale when switching to card layout
+        const invoiceBox = document.querySelector('.invoice-box');
+        if (invoiceBox) { invoiceBox.style.transform = ''; invoiceBox.style.marginBottom = ''; }
+        const wrapper = document.getElementById('desktop-wrapper');
+        if (wrapper) wrapper.style.height = '';
       } else {
         document.body.classList.remove('card-layout');
         if (viewportMeta) {
-          if (window.innerWidth <= 1020) {
-            viewportMeta.content = "width=1024";
-          } else {
-            viewportMeta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0";
-          }
+          viewportMeta.content = "width=device-width, initial-scale=1.0";
         }
+        // Scale invoice to fit mobile screen after a short delay (wait for render)
+        setTimeout(scaleInvoiceForMobile, 50);
       }
       // Sync FAB button appearance
       const fab = document.getElementById('mobileViewFab');
@@ -2468,11 +2512,6 @@
 
         // Always default to desktop/invoice view on all devices (mobile + desktop)
         document.getElementById('layoutToggle').checked = false;
-        // On small screens, use width=1024 viewport so the full invoice is visible (horizontally scrollable)
-        const viewportMeta = document.getElementById('viewport-meta');
-        if (viewportMeta && window.innerWidth <= 1020) {
-          viewportMeta.content = "width=1024";
-        }
         toggleLayout();
 
         renderBill(currentBillData);
@@ -2484,6 +2523,9 @@
 
         document.getElementById('loading-screen').style.display = 'none';
         document.getElementById('desktop-wrapper').style.visibility = 'visible';
+
+        // Apply mobile scaling after invoice is fully rendered
+        setTimeout(scaleInvoiceForMobile, 80);
 
       } catch (error) {
         document.getElementById('loading-screen').innerHTML = "डेटा लोड करताना तांत्रिक त्रुटी आली.";

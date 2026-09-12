@@ -1,4 +1,4 @@
-
+ 
 
 <!DOCTYPE html>
 <html lang="mr">
@@ -1685,7 +1685,7 @@
       </div>
 
       <div id="step1-label" class="step-label" style="display:none;">📄 Step 1: तुमचे कोटेशन तपासा</div>
-      <h2 class="doc-title" id="doc-title">पक्के बिल</h2>
+      <h2 class="doc-title" id="doc-title">बिल</h2>
 
       <div class="details-container">
         <div class="details-left">
@@ -2590,7 +2590,7 @@
       let billIdText = data.id || "-";
       document.getElementById('doc-title').innerText = data.docType === "Quotation"
         ? `कोटेशन (${billIdText})`
-        : `पक्के बिल (${billIdText})`;
+        : `बिल (${billIdText})`;
 
       let isQuotation = data.docType === "Quotation";
       if (isQuotation) {

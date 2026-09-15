@@ -1,4 +1,4 @@
- 
+
 
 <!DOCTYPE html>
 <html lang="mr">
@@ -1208,19 +1208,25 @@
         background: white;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+        min-width: 970px !important;
       }
 
       #desktop-wrapper {
         transform: none !important;
-        padding: 0;
-        width: 100%;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
       }
 
       .invoice-box {
-        box-shadow: none;
-        border: 1.5px solid #000;
-        padding: 16px 20px;
-        width: 100%;
+        box-shadow: none !important;
+        border: 2px solid #000 !important;
+        padding: 40px !important;
+        width: 970px !important;
+        max-width: 970px !important;
+        transform: none !important;
+        margin: 0 auto !important;
+        margin-bottom: 0 !important;
       }
 
       .trip-acc-body {
@@ -1247,45 +1253,13 @@
         display: none !important;
       }
 
-      .header h1 {
-        font-size: 32px;
-      }
-
-      .header p,
-      .doc-title,
-      .details-left p,
-      .details-right p,
-      th,
-      td,
-      .words-logistics,
-      .note-box p,
-      .trips-section-title,
-      .totals-row {
-        font-size: 18px !important;
-      }
-
-      .details-left h3 {
-        font-size: 20px;
-      }
-
       .grand-total {
-        font-size: 22px;
-        padding: 10px 15px;
         background: #e9ecef !important;
-      }
-
-      .balance-due {
-        font-size: 24px;
-      }
-
-      .balance-clear {
-        font-size: 20px;
       }
 
       a.phone-link {
         color: #000;
         text-decoration: none;
-        font-size: inherit;
       }
     }
 
